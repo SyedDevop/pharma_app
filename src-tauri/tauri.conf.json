@@ -12,7 +12,8 @@
   "app": {
     "windows": [
       {
-        "title": "pharma_app",
+        "title": "pharma",
+        "maximized": true,
         "width": 800,
         "height": 600
       }

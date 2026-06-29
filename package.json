@@ -4,7 +4,8 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "dev": "WEBKIT_DISABLE_DMABUF_RENDERER=1 vite dev",
+    "dev:tauri": "WEBKIT_DISABLE_DMABUF_RENDERER=1 tauri dev",
+    "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
