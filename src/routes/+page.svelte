@@ -9,6 +9,7 @@
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     greetMsg = await invoke("greet", { name });
   }
+  import "../app.css";
 </script>
 
 <main class="container">
