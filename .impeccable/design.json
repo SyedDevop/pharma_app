@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-30T19:35:00.000Z",
+  "title": "Design System: Pharma App",
+  "extensions": {
+    "colorMeta": {
+      "medical-teal": {
+        "role": "primary",
+        "displayName": "Medical Teal",
+        "canonical": "oklch(0.511 0.096 186.391)",
+        "tonalRamp": [
+          "oklch(0.15 0.096 186.391)",
+          "oklch(0.28 0.096 186.391)",
+          "oklch(0.40 0.096 186.391)",
+          "oklch(0.511 0.096 186.391)",
+          "oklch(0.63 0.096 186.391)",
+          "oklch(0.75 0.096 186.391)",
+          "oklch(0.87 0.096 186.391)",
+          "oklch(0.95 0.096 186.391)"
+        ]
+      },
+      "mauve-stone": {
+        "role": "neutral",
+        "displayName": "Mauve Stone",
+        "canonical": "oklch(0.96 0.003 325.6)",
+        "tonalRamp": [
+          "oklch(0.14 0.008 326)",
+          "oklch(0.25 0.012 324)",
+          "oklch(0.42 0.024 323)",
+          "oklch(0.542 0.034 322.5)",
+          "oklch(0.68 0.026 324)",
+          "oklch(0.82 0.012 325)",
+          "oklch(0.92 0.005 325.6)",
+          "oklch(0.96 0.003 325.6)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": []
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.145 0.008 326)",
+        "tonalRamp": []
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page and modal titles. Max 2 per screen."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section and card headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Navigation items, list item titles, table row labels."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default text. Tables, paragraphs, form labels. Max line length 75ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Button text, form captions, badges, tabs."
+      }
+    },
+    "shadows": [
+      {
+        "name": "floating",
+        "value": "0 2px 8px rgba(0,0,0,0.08)",
+        "purpose": "Dropdowns, popovers, tooltips, date pickers."
+      },
+      {
+        "name": "hover-lift",
+        "value": "0 1px 4px rgba(0,0,0,0.06)",
+        "purpose": "Interactive cards and rows on hover."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for state transitions (hover, focus, open/close)."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Hover, focus, active state transitions."
+      },
+      {
+        "name": "duration-normal",
+        "value": "200ms",
+        "purpose": "Dropdown and popover open/close."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default call-to-action. One per view.",
+      "html": "<button class=\"ds-btn-primary\">Save</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Manrope Variable', sans-serif; font-size: 0.75rem; font-weight: 500; line-height: 1.25; letter-spacing: 0.04em; background: oklch(0.511 0.096 186.391); color: oklch(0.984 0.014 180.72); padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: oklch(0.43 0.096 186.391); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px oklch(0.511 0.096 186.391 / 0.3); } .ds-btn-primary:active { background: oklch(0.38 0.096 186.391); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary actions. Pairs with primary.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Manrope Variable', sans-serif; font-size: 0.75rem; font-weight: 500; line-height: 1.25; letter-spacing: 0.04em; background: oklch(0.96 0.003 325.6); color: oklch(0.21 0.006 285.885); padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-secondary:hover { background: oklch(0.92 0.005 325.6); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px oklch(0.511 0.096 186.391 / 0.3); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Subtle inline actions, settings links.",
+      "html": "<button class=\"ds-btn-ghost\">Edit</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Manrope Variable', sans-serif; font-size: 0.75rem; font-weight: 500; line-height: 1.25; letter-spacing: 0.04em; background: transparent; color: oklch(0.511 0.096 186.391); padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-ghost:hover { background: oklch(0.96 0.003 325.6); } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 2px oklch(0.511 0.096 186.391 / 0.3); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Default text field for forms and search.",
+      "html": "<div><label class=\"ds-label\">Search</label><input class=\"ds-input\" type=\"text\" placeholder=\"Search...\" /></div>",
+      "css": ".ds-label { display: block; font-family: 'Manrope Variable', sans-serif; font-size: 0.75rem; font-weight: 500; line-height: 1.25; letter-spacing: 0.04em; color: oklch(0.542 0.034 322.5); margin-bottom: 4px; text-transform: uppercase; } .ds-input { display: block; width: 100%; font-family: 'Manrope Variable', sans-serif; font-size: 0.875rem; font-weight: 400; line-height: 1.5; color: oklch(0.145 0.008 326); background: oklch(1 0 0); border: 1px solid oklch(0.922 0.005 325.62); border-radius: 4px; padding: 10px 12px; height: 40px; transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box; } .ds-input::placeholder { color: oklch(0.542 0.034 322.5); } .ds-input:focus { outline: none; border-color: oklch(0.511 0.096 186.391); box-shadow: 0 0 0 2px oklch(0.511 0.096 186.391 / 0.3); } .ds-input:disabled { background: oklch(0.96 0.003 325.6); opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Sidebar navigation in its default and active states.",
+      "html": "<nav style=\"width: 240px; background: oklch(0.985 0 0); padding: 8px; border-radius: 0;\"><a class=\"ds-nav-item\" href=\"#\">Dashboard</a><a class=\"ds-nav-item ds-nav-item-active\" href=\"#\">Inventory</a><a class=\"ds-nav-item\" href=\"#\">Orders</a><a class=\"ds-nav-item\" href=\"#\">Customers</a></nav>",
+      "css": ".ds-nav-item { display: flex; align-items: center; gap: 12px; font-family: 'Manrope Variable', sans-serif; font-size: 0.9375rem; font-weight: 500; line-height: 1.4; color: oklch(0.542 0.034 322.5); padding: 10px 12px; border-radius: 4px; text-decoration: none; transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; } .ds-nav-item:hover { background: oklch(0.96 0.003 325.6); color: oklch(0.21 0.006 285.885); } .ds-nav-item-active { background: oklch(0.511 0.096 186.391); color: oklch(0.984 0.014 180.72); } .ds-nav-item-active:hover { background: oklch(0.43 0.096 186.391); color: oklch(0.984 0.014 180.72); }"
+    },
+    {
+      "name": "Data Table",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Default data table with header, rows, and hover state.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Drug Name</th><th>Qty</th><th>Expiry</th><th>Price</th></tr></thead><tbody><tr><td>Amoxicillin 500mg</td><td>240</td><td>2027-03-15</td><td>$12.50</td></tr><tr><td>Atorvastatin 20mg</td><td>180</td><td>2026-11-01</td><td>$24.00</td></tr><tr><td>Metformin 850mg</td><td>500</td><td>2028-01-20</td><td>$8.75</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; font-family: 'Manrope Variable', sans-serif; font-size: 0.875rem; font-weight: 400; line-height: 1.5; color: oklch(0.145 0.008 326); } .ds-table thead th { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: oklch(0.542 0.034 322.5); text-align: left; padding: 8px 12px; border-bottom: 1px solid oklch(0.922 0.005 325.62); } .ds-table tbody td { padding: 10px 12px; border-bottom: 1px solid oklch(0.922 0.005 325.62); } .ds-table tbody tr { transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-table tbody tr:hover { background: oklch(0.96 0.003 325.6); } .ds-table tbody tr:focus-within { background: oklch(0.96 0.003 325.6); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Content container for groupings and summaries.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Inventory Summary</h3><p class=\"ds-card-body\">245 items in stock across 12 categories. 3 items below reorder threshold.</p></div>",
+      "css": ".ds-card { background: oklch(1 0 0); border-radius: 0; padding: 16px; } .ds-card-title { font-family: 'Manrope Variable', sans-serif; font-size: 1.125rem; font-weight: 600; line-height: 1.3; color: oklch(0.145 0.008 326); margin: 0 0 8px 0; } .ds-card-body { font-family: 'Manrope Variable', sans-serif; font-size: 0.875rem; font-weight: 400; line-height: 1.5; color: oklch(0.542 0.034 322.5); margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clinic",
+    "overview": "A pharmacy management desktop app that feels like a well-organized pharmacy counter: everything in its place, every surface clean, every interaction precise. The system balances medical authority with modern restraint — clinical without being cold, efficient without feeling rushed.\n\nThis is not a hospital system (cluttered, dated, low-contrast). Not an over-designed dashboard (decorative charts, gradient accents, glassmorphism). Not a generic SaaS product (round buttons, playful illustrations, cookie-cutter cards). It is a precise instrument for pharmacy staff who need speed and clarity under real pressure.",
+    "keyCharacteristics": [
+      "Airy, light default theme with high contrast and generous whitespace",
+      "Flat surfaces with subtle elevation only on interactive states",
+      "Consistent 4px corner radius on interactive elements, sharp 0px on containers",
+      "Mauve-leaning neutrals for calm authority; teal accent for wayfinding and action",
+      "Typography-driven hierarchy; Manrope across all roles",
+      "Decoration is functional: borders, backgrounds, and spacing carry information"
+    ],
+    "rules": [
+      {
+        "name": "The One Accent Rule",
+        "body": "Medical Teal is the only accent. It appears on ≤10% of any screen — primary buttons, active nav, selection states. If a second accent color is needed (e.g. for third-party integrations), it must be a desaturated variant within the teal hue family.",
+        "section": "colors"
+      },
+      {
+        "name": "The Contrast Rule",
+        "body": "No text on a tinted background without verification. Body text hits ≥4.5:1, large text ≥3:1. Muted text (Mauve Stone Deep) is never used for primary information.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Decoration Rule",
+        "body": "No gradient text, no drop caps, no fancy initial letters. Weight and size do the hierarchy work. The single weight axis of Manrope is enough.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest. Shadows appear only for floating UI (dropdowns, dialogs, tooltips) and hover states. Never apply static shadows to resting cards or panels.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Medical Teal as the sole accent, covering ≤10% of any screen.",
+      "Do keep containers sharp (0px radius); reserve 4px radius for interactive elements.",
+      "Do use the Mauve Stone neutral family for all non-accent surfaces and borders.",
+      "Do prefer tonal layering over shadows: shift background lightness to convey depth.",
+      "Do verify body text contrast ≥4.5:1 against its background.",
+      "Do use `text-wrap: balance` on display/headline text and `text-wrap: pretty` on long prose.",
+      "Do use compact table rows (40px) for data-dense screens and comfortable (48px) for interactive tables."
+    ],
+    "donts": [
+      "Don't use a second accent color outside the teal hue family.",
+      "Don't use gradient text, glassmorphism, or decorative blur effects.",
+      "Don't apply static shadows to resting cards, panels, or containers.",
+      "Don't use side-stripe borders (border-left/right >1px) as accent markers on cards or callouts.",
+      "Don't use the \"hero-metric\" template (big number + small label + gradient accent).",
+      "Don't add tiny uppercase tracked eyebrows (\u201cINVENTORY\u201d \u201cORDERS\u201d \u201cREPORTS\u201d) above every section heading. One deliberate section label is voice; every section is AI grammar.",
+      "Don't use numbered section markers (01 / 02 / 03) as default scaffolding. Numbers earn their place only when the sequence carries information (a real workflow, a step-by-step flow).",
+      "Don't use identical card grids (icon + heading + text, repeated endlessly).",
+      "Don't nest cards. Cards at one level only.",
+      "Don't use playful illustrations, emoji, or decorative icons in the interface.",
+      "Don't let display text overflow its container. Test every heading at every breakpoint."
+    ]
+  }
+}

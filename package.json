@@ -20,9 +20,11 @@
   },
   "devDependencies": {
     "@fontsource-variable/manrope": "^5.2.8",
+    "@hypothesi/tauri-mcp-cli": "^0.10.0",
     "@lucide/svelte": "^1.22.0",
     "@sveltejs/adapter-static": "^3.0.6",
     "@sveltejs/kit": "^2.9.0",
+    "@sveltejs/mcp": "^0.1.25",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tailwindcss/vite": "^4.3.2",
     "@tauri-apps/cli": "^2",
