@@ -1,35 +1,59 @@
-<script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
+<div
+  class="min-h-screen flex items-center justify-center p-4"
+  style="background: linear-gradient(135deg, #acdff0 0%, #ffeec9 50%, #ffdbce 100%);"
+>
+  <div
+    class="max-w-lg w-full bg-white/90 backdrop-blur-sm rounded-lg border border-white/20 p-8 text-center shadow-lg"
+  >
+    <div class="mb-8">
+      <h1 class="text-3xl font-semibo ld text-gray-900 mb-3">
+        Welcome to SvelteKit with Rolldown × Tauri with Servo rendering × Biome
+        × Tailwind × ShadCn × Bun
+      </h1>
+      <p class="text-gray-700">
+        A powerful desktop app framework combining Rust and modern web tech
+      </p>
+    </div>
 
-  let name = $state("");
-  let greetMsg = $state("");
-
-  async function greet(event: Event) {
-    event.preventDefault();
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsg = await invoke("greet", { name });
-  }
-</script>
-
-<main class="container">
-  <h1>Welcome to Tauri + Svelte</h1>
-
-  <div class="row">
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte-kit" alt="SvelteKit Logo" />
-    </a>
+    <div class="space-y-6">
+      <div class="flex justify-center flex-wrap gap-2">
+        <span
+          class="bg-orange-100 text-orange-800 px-3 py-1 rounded-md text-sm font-medium"
+        >
+          Svelte v5 + SvelteKit v2
+        </span>
+        <span
+          class="bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm font-medium"
+        >
+          Vite v7 (with Rolldown)
+        </span>
+        <span
+          class="bg-sky-100 text-sky-800 px-3 py-1 rounded-md text-sm font-medium"
+        >
+          Tauri v2 (with Servo rendering engine)
+        </span>
+        <span
+          class="bg-green-100 text-green-800 px-3 py-1 rounded-md text-sm font-medium"
+        >
+          Biome v2
+        </span>
+        <span
+          class="bg-purple-100 text-purple-800 px-3 py-1 rounded-md text-sm font-medium"
+        >
+          Tailwind v4
+        </span>
+        <span
+          class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-md text-sm font-medium"
+        >
+          ShadCn
+        </span>
+        <span
+          class="bg-red-100 text-red-800 px-3 py-1 rounded-md text-sm font-medium"
+        >
+          Bun v1.2
+        </span>
+        <button>ShadCn Button</button>
+      </div>
+    </div>
   </div>
-  <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
-
-  <form class="row" onsubmit={greet}>
-    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
-    <button type="submit">Greet</button>
-  </form>
-  <p>{greetMsg}</p>
-</main>
+</div>
