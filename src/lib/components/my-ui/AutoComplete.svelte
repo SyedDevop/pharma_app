@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Command from "$lib/components/ui/command";
-  import { Loader } from '@lucide/svelte';
+  import { Loader, X } from '@lucide/svelte';
   import { cn } from "$lib/utils";
   import { fly } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
@@ -20,8 +20,9 @@
     emptyText = "No results found.",
     loadingText = "Searching...",
     errorText = "Search failed — try again",
-    debounceMs = 300,
     maxResults,
+    debounceMs = 0,
+    clearable = true,
     onSelect,
     onSearch,
     class: className,
@@ -36,10 +37,13 @@
     emptyText?: string;
     loadingText?: string;
     errorText?: string;
-    debounceMs?: number;
     maxResults?: number;
+    /** Debounce onSearch calls by this many ms. 0 disables debouncing. */
+    debounceMs?: number;
+    /** Show a button to clear the input. */
+    clearable?: boolean;
     onSelect?: (item: OptionType) => void;
-    onSearch?: (query: string, signal?: AbortSignal) => void;
+    onSearch?: (query: string) => void;
     class?: string;
     ariaLabel?: string;
   } = $props();
@@ -47,8 +51,7 @@
   let open = $state(false);
   let inputValue = $state("");
   let inputRef = $state<HTMLInputElement | null>(null);
-  let debounceTimer = $state<ReturnType<typeof setTimeout> | null>(null);
-  let activeController = $state<AbortController | null>(null);
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
   let displayedItems = $derived(
     maxResults !== undefined ? items.slice(0, maxResults) : items,
@@ -58,16 +61,34 @@
   );
   let listId = $derived(`autocomplete-list-${Math.random().toString(36).slice(2, 9)}`);
 
+  // Keep the visible text in sync with an externally-controlled `value`:
+  // - value cleared elsewhere -> clear the input
+  // - value set/changed elsewhere to something matching a known item -> show its label
+  let lastSyncedValue = "";
   $effect(() => {
-    if (value !== undefined && value !== inputValue) {
-      if (value === "") {
-        inputValue = "";
-      }
+    if (value === lastSyncedValue) return;
+    lastSyncedValue = value;
+    if (value === "") {
+      inputValue = "";
+    } else {
+      const match = items.find((i) => i.value === value);
+      if (match) inputValue = match.label;
     }
   });
 
+  function runSearch(query: string) {
+    if (!onSearch) return;
+    if (debounceMs > 0) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => onSearch(query), debounceMs);
+    } else {
+      onSearch(query);
+    }
+  }
+
   function handleSelect(item: OptionType) {
     value = item.value;
+    lastSyncedValue = item.value;
     inputValue = item.label;
     open = false;
     inputRef?.focus();
@@ -75,39 +96,29 @@
   }
 
   function handleClear() {
+    clearTimeout(debounceTimer);
     value = "";
+    lastSyncedValue = "";
     inputValue = "";
-    cancelPending();
+    open = false;
     onSearch?.("");
     inputRef?.focus();
-  }
-
-  function cancelPending() {
-    if (debounceTimer !== null) {
-      clearTimeout(debounceTimer);
-      debounceTimer = null;
-    }
-    if (activeController !== null) {
-      activeController.abort();
-      activeController = null;
-    }
   }
 
   function handleInput(e: Event) {
     const target = e.currentTarget as HTMLInputElement;
     inputValue = target.value;
+    // Typing free-form text invalidates any previously selected value.
+    if (value !== "") {
+      value = "";
+      lastSyncedValue = "";
+    }
     if (target.value) {
       open = true;
-      cancelPending();
-      const controller = new AbortController();
-      activeController = controller;
-      debounceTimer = setTimeout(() => {
-        debounceTimer = null;
-        onSearch?.(target.value, controller.signal);
-      }, debounceMs);
+      runSearch(target.value);
     } else {
       open = false;
-      cancelPending();
+      clearTimeout(debounceTimer);
       onSearch?.("");
     }
   }
@@ -121,6 +132,9 @@
       if (open) {
         e.preventDefault();
         open = false;
+      } else if (clearable && inputValue) {
+        e.preventDefault();
+        handleClear();
       }
     } else if (e.key === "ArrowDown" && !open) {
       if (inputValue || items.length > 0) {
@@ -129,10 +143,6 @@
       }
     }
   }
-
-  $effect(() => {
-    return () => cancelPending();
-  });
 
   $effect(() => {
     if (!open) return;
@@ -145,6 +155,8 @@
     document.addEventListener("mousedown", onMouseDown);
     return () => document.removeEventListener("mousedown", onMouseDown);
   });
+
+  $effect(() => () => clearTimeout(debounceTimer));
 </script>
 
 <div data-autocomplete class={cn("relative", className)}>
@@ -153,19 +165,32 @@
     class={cn("rounded-none!", open ? "overflow-visible" : "")}
     {...restProps}
   >
-    <Command.Input
-      {placeholder}
-      value={inputValue}
-      oninput={handleInput}
-      onfocus={handleFocus}
-      onkeydown={handleKeyDown}
-      bind:ref={inputRef}
-      aria-label={ariaLabel}
-      aria-expanded={open}
-      aria-controls={open ? listId : undefined}
-      aria-autocomplete="list"
-    />
-
+    <div class="relative flex items-center">
+      <Command.Input
+        {placeholder}
+        value={inputValue}
+        oninput={handleInput}
+        onfocus={handleFocus}
+        onkeydown={handleKeyDown}
+        bind:ref={inputRef}
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        aria-controls={open ? listId : undefined}
+        aria-autocomplete="list"
+        class={clearable && inputValue ? "pr-8" : undefined}
+      />
+      {#if clearable && inputValue}
+        <button
+          type="button"
+          tabindex={-1}
+          aria-label="Clear search"
+          onclick={handleClear}
+          class="absolute right-2 flex size-5 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
+        >
+          <X class="size-4" />
+        </button>
+      {/if}
+    </div>
     {#if open}
       <div
         id={listId}
@@ -232,12 +257,14 @@
       transform: translateY(0);
     }
   }
-
   :global(.ac-item) {
     animation: ac-fade-in 100ms cubic-bezier(0.25, 1, 0.5, 1) both;
     animation-delay: calc(var(--i, 0) * 25ms);
   }
-
+  :global(.ac-item[data-selected="true"]) {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
   @media (prefers-reduced-motion: reduce) {
     :global(.ac-item) {
       animation: none !important;

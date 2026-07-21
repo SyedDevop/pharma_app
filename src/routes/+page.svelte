@@ -85,10 +85,7 @@
           loading={isLoading}
           error={isError}
           items={patientOptions}
-          onSearch={(e) => {
-            console.log(e);
-            search = e;
-          }}
+          onSearch={(e) => { search = e; }}
           ariaLabel="Search retail customers"
         />
       </div>
