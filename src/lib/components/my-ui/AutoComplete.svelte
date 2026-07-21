@@ -4,46 +4,27 @@
   import { cn } from "$lib/utils";
   import { fly } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
-
-  export type OptionType = {
-    label: string;
-    value: string;
-    subtitle?: string;
-  };
+    import { fetch } from "@tauri-apps/plugin-http";
+    import MyInput from "./MyInput.svelte";
 
   let {
-    value = $bindable(""),
-    items = [],
-    loading = false,
-    error = false,
-    placeholder = "Search...",
-    emptyText = "No results found.",
-    loadingText = "Searching...",
-    errorText = "Search failed — try again",
-    maxResults,
-    debounceMs = 0,
-    clearable = true,
     onSelect,
-    onSearch,
+    placeholder = "Search patient by name or mobile...",
+    emptyText = "No patients found.",
+    loadingText = "Searching patients...",
+    errorText = "Couldn't load patients — try again",
+    debounceMs = 300,
+    maxResults,
     class: className,
-    ariaLabel = "Search",
-    ...restProps
+    ariaLabel = "Search patient",
   }: {
-    value?: string;
-    items?: OptionType[];
-    loading?: boolean;
-    error?: boolean;
+    onSelect?: (patient: Patient) => void;
     placeholder?: string;
     emptyText?: string;
     loadingText?: string;
     errorText?: string;
-    maxResults?: number;
-    /** Debounce onSearch calls by this many ms. 0 disables debouncing. */
     debounceMs?: number;
-    /** Show a button to clear the input. */
-    clearable?: boolean;
-    onSelect?: (item: OptionType) => void;
-    onSearch?: (query: string) => void;
+    maxResults?: number;
     class?: string;
     ariaLabel?: string;
   } = $props();
@@ -51,75 +32,102 @@
   let open = $state(false);
   let inputValue = $state("");
   let inputRef = $state<HTMLInputElement | null>(null);
-  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-  let displayedItems = $derived(
-    maxResults !== undefined ? items.slice(0, maxResults) : items,
+  let patients = $state<Patient[]>([]);
+  let loading = $state(false);
+  let error = $state(false);
+
+  let displayedPatients = $derived(
+    maxResults !== undefined ? patients.slice(0, maxResults) : patients,
   );
   let isTruncated = $derived(
-    maxResults !== undefined && items.length > maxResults,
+    maxResults !== undefined && patients.length > maxResults,
   );
-  let listId = $derived(`autocomplete-list-${Math.random().toString(36).slice(2, 9)}`);
+  let listId = `patient-search-list-${Math.random().toString(36).slice(2, 9)}`;
 
-  // Keep the visible text in sync with an externally-controlled `value`:
-  // - value cleared elsewhere -> clear the input
-  // - value set/changed elsewhere to something matching a known item -> show its label
-  let lastSyncedValue = "";
-  $effect(() => {
-    if (value === lastSyncedValue) return;
-    lastSyncedValue = value;
-    if (value === "") {
-      inputValue = "";
-    } else {
-      const match = items.find((i) => i.value === value);
-      if (match) inputValue = match.label;
+  let requestId = 0;
+  let controller: AbortController | null = null;
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+  async function searchPatients(term: string) {
+    const currentRequest = ++requestId;
+
+    controller?.abort();
+    controller = new AbortController();
+
+    if (!term) {
+      patients = [];
+      loading = false;
+      error = false;
+      return;
     }
-  });
 
-  function runSearch(query: string) {
-    if (!onSearch) return;
-    if (debounceMs > 0) {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => onSearch(query), debounceMs);
-    } else {
-      onSearch(query);
+    loading = true;
+    error = false;
+
+    try {
+      const encoded = encodeURIComponent(term);
+      const url = `https://pharmacy.vcarehospital.in/api/get_patient.php?term=${encoded}&type=customer`;
+      const res = await fetch(url, { signal: controller.signal });
+
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+
+      const data = (await res.json()) as ApiResponse<Patient[]>;
+
+      // Ignore results from a stale/superseded request.
+      if (currentRequest !== requestId) return;
+
+      patients = Array.isArray(data?.data) ? data.data : [];
+      loading = false;
+    } catch (err) {
+      if ((err as Error).name === "AbortError") return;
+      if (currentRequest !== requestId) return;
+      patients = [];
+      loading = false;
+      error = true;
     }
   }
 
-  function handleSelect(item: OptionType) {
-    value = item.value;
-    lastSyncedValue = item.value;
-    inputValue = item.label;
+  function runSearch(term: string) {
+    clearTimeout(debounceTimer);
+    if (debounceMs > 0) {
+      debounceTimer = setTimeout(() => searchPatients(term), debounceMs);
+    } else {
+      searchPatients(term);
+    }
+  }
+
+  function handleSelect(patient: Patient) {
+    inputValue = patient.patient_name;
     open = false;
     inputRef?.focus();
-    onSelect?.(item);
+    onSelect?.(patient);
   }
 
   function handleClear() {
     clearTimeout(debounceTimer);
-    value = "";
-    lastSyncedValue = "";
+    controller?.abort();
     inputValue = "";
+    patients = [];
+    loading = false;
+    error = false;
     open = false;
-    onSearch?.("");
     inputRef?.focus();
   }
 
   function handleInput(e: Event) {
     const target = e.currentTarget as HTMLInputElement;
     inputValue = target.value;
-    // Typing free-form text invalidates any previously selected value.
-    if (value !== "") {
-      value = "";
-      lastSyncedValue = "";
-    }
     if (target.value) {
       open = true;
       runSearch(target.value);
     } else {
       open = false;
       clearTimeout(debounceTimer);
-      onSearch?.("");
+      controller?.abort();
+      patients = [];
+      loading = false;
+      error = false;
     }
   }
 
@@ -132,12 +140,12 @@
       if (open) {
         e.preventDefault();
         open = false;
-      } else if (clearable && inputValue) {
+      } else if (inputValue) {
         e.preventDefault();
         handleClear();
       }
     } else if (e.key === "ArrowDown" && !open) {
-      if (inputValue || items.length > 0) {
+      if (inputValue || patients.length > 0) {
         e.preventDefault();
         open = true;
       }
@@ -148,7 +156,7 @@
     if (!open) return;
     function onMouseDown(e: MouseEvent) {
       const target = e.target as HTMLElement;
-      if (!target.closest("[data-autocomplete]")) {
+      if (!target.closest("[data-patient-search]")) {
         open = false;
       }
     }
@@ -156,41 +164,28 @@
     return () => document.removeEventListener("mousedown", onMouseDown);
   });
 
-  $effect(() => () => clearTimeout(debounceTimer));
+  $effect(() => () => {
+    clearTimeout(debounceTimer);
+    controller?.abort();
+  });
 </script>
 
-<div data-autocomplete class={cn("relative", className)}>
-  <Command.Root
-    shouldFilter={false}
-    class={cn("rounded-none!", open ? "overflow-visible" : "")}
-    {...restProps}
-  >
-    <div class="relative flex items-center">
-      <Command.Input
-        {placeholder}
-        value={inputValue}
-        oninput={handleInput}
-        onfocus={handleFocus}
-        onkeydown={handleKeyDown}
-        bind:ref={inputRef}
-        aria-label={ariaLabel}
-        aria-expanded={open}
-        aria-controls={open ? listId : undefined}
-        aria-autocomplete="list"
-        class={clearable && inputValue ? "pr-8" : undefined}
-      />
-      {#if clearable && inputValue}
-        <button
-          type="button"
-          tabindex={-1}
-          aria-label="Clear search"
-          onclick={handleClear}
-          class="absolute right-2 flex size-5 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
-        >
-          <X class="size-4" />
-        </button>
-      {/if}
-    </div>
+<div data-patient-search class={cn("relative", className)}>
+  <Command.Root shouldFilter={false}>
+    <MyInput
+      {placeholder}
+      value={inputValue}
+      oninput={handleInput}
+      onfocus={handleFocus}
+      onkeydown={handleKeyDown}
+      bind:ref={inputRef}
+      aria-label={ariaLabel}
+      aria-expanded={open}
+      aria-controls={open ? listId : undefined}
+      aria-autocomplete="list"
+      class={inputValue ? "pr-8" : undefined}
+      onClear={handleClear}
+    />
     {#if open}
       <div
         id={listId}
@@ -202,7 +197,7 @@
           {#if loading}
             <Command.Loading>
               <div class="flex items-center gap-2 px-2 py-3 text-sm text-muted-foreground">
-                <Loader class="size-4 animate-spin"/>
+                <Loader class="size-4 animate-spin" />
                 {loadingText}
               </div>
             </Command.Loading>
@@ -212,31 +207,31 @@
                 {errorText}
               </div>
             </Command.Empty>
-          {:else if displayedItems.length === 0}
+          {:else if displayedPatients.length === 0}
             <Command.Empty>
               <div class="px-2 py-4 text-center text-sm text-muted-foreground">{emptyText}</div>
             </Command.Empty>
           {:else}
             <Command.Group>
-              {#each displayedItems as item, i (item.value)}
+              {#each displayedPatients as patient, i (patient.patient_id)}
                 <Command.Item
-                  value={item.value}
-                  onselect={() => handleSelect(item)}
-                  class="ac-item"
+                  value={String(patient.patient_id)}
+                  onselect={() => handleSelect(patient)}
+                  class="ps-item"
                   style="--i: {i}"
                 >
                   <div class="flex min-w-0 flex-col">
-                    <span class="truncate">{item.label}</span>
-                    {#if item.subtitle}
-                      <span class="truncate text-xs text-muted-foreground">{item.subtitle}</span>
-                    {/if}
+                    <span class="truncate">{patient.patient_name}</span>
+                    <span class="truncate text-xs text-muted-foreground">
+                      {[patient.mobile, patient.visit_no, patient.doctor_name].filter(Boolean).join(" · ")}
+                    </span>
                   </div>
                 </Command.Item>
               {/each}
             </Command.Group>
             {#if isTruncated}
               <div class="px-2 py-1.5 text-center text-xs text-muted-foreground">
-                Showing {maxResults} of {items.length} results
+                Showing {maxResults} of {patients.length} results
               </div>
             {/if}
           {/if}
@@ -247,7 +242,7 @@
 </div>
 
 <style>
-  @keyframes ac-fade-in {
+  @keyframes ps-fade-in {
     from {
       opacity: 0;
       transform: translateY(-2px);
@@ -257,16 +252,16 @@
       transform: translateY(0);
     }
   }
-  :global(.ac-item) {
-    animation: ac-fade-in 100ms cubic-bezier(0.25, 1, 0.5, 1) both;
+  :global(.ps-item) {
+    animation: ps-fade-in 100ms cubic-bezier(0.25, 1, 0.5, 1) both;
     animation-delay: calc(var(--i, 0) * 25ms);
   }
-  :global(.ac-item[data-selected="true"]) {
+  :global(.ps-item[data-selected="true"]) {
     background-color: var(--accent);
     color: var(--accent-foreground);
   }
   @media (prefers-reduced-motion: reduce) {
-    :global(.ac-item) {
+    :global(.ps-item) {
       animation: none !important;
     }
   }
