@@ -13,8 +13,9 @@
     <Card.Content class="flex w-full h-full flex-row gap-2">
       <div class="flex flex-col items-start">
         <Label>Retail Customer Search</Label>
-        <AutoComplete 
+        <AutoComplete
           onSelect={(patient) => console.log(patient.visit_no, patient.doctor_name)}
+          patientFrom="customer"
         /> 
       </div>
     </Card.Content>

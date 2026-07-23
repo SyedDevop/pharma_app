@@ -1,24 +1,14 @@
 <script lang="ts">
   import * as Command from "$lib/components/ui/command";
-  import { Loader, X } from '@lucide/svelte';
+  import { Loader } from "@lucide/svelte";
   import { cn } from "$lib/utils";
-  import { fly } from "svelte/transition";
-  import { cubicOut } from "svelte/easing";
-    import { fetch } from "@tauri-apps/plugin-http";
-    import MyInput from "./MyInput.svelte";
+  import * as Popover from "$lib/components/ui/popover/index";
+  import MyInput from "./MyInput.svelte";
+  import { fetchApi } from "$lib/api";
 
-  let {
-    onSelect,
-    placeholder = "Search patient by name or mobile...",
-    emptyText = "No patients found.",
-    loadingText = "Searching patients...",
-    errorText = "Couldn't load patients — try again",
-    debounceMs = 300,
-    maxResults,
-    class: className,
-    ariaLabel = "Search patient",
-  }: {
+  interface Props {
     onSelect?: (patient: Patient) => void;
+    patientFrom: "ipd" | "opd" | "customer";
     placeholder?: string;
     emptyText?: string;
     loadingText?: string;
@@ -27,7 +17,19 @@
     maxResults?: number;
     class?: string;
     ariaLabel?: string;
-  } = $props();
+  }
+
+  let {
+    onSelect,
+    placeholder = "patient by name or mobile...",
+    loadingText = "Searching patients...",
+    errorText = "Couldn't load patients — try again",
+    debounceMs = 300,
+    maxResults,
+    class: className,
+    ariaLabel = "Search patient",
+    patientFrom,
+  }: Props = $props();
 
   let open = $state(false);
   let inputValue = $state("");
@@ -36,6 +38,9 @@
   let patients = $state<Patient[]>([]);
   let loading = $state(false);
   let error = $state(false);
+
+  // Message from the API to show when the request itself failed at the app level.
+  let errorMessage = $state("");
 
   let displayedPatients = $derived(
     maxResults !== undefined ? patients.slice(0, maxResults) : patients,
@@ -46,41 +51,45 @@
   let listId = `patient-search-list-${Math.random().toString(36).slice(2, 9)}`;
 
   let requestId = 0;
-  let controller: AbortController | null = null;
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
   async function searchPatients(term: string) {
     const currentRequest = ++requestId;
 
-    controller?.abort();
-    controller = new AbortController();
-
     if (!term) {
       patients = [];
       loading = false;
       error = false;
+      errorMessage = "";
       return;
     }
 
     loading = true;
     error = false;
+    errorMessage = "";
 
     try {
       const encoded = encodeURIComponent(term);
-      const url = `https://pharmacy.vcarehospital.in/api/get_patient.php?term=${encoded}&type=customer`;
-      const res = await fetch(url, { signal: controller.signal });
-
-      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-
-      const data = (await res.json()) as ApiResponse<Patient[]>;
+      const body = await fetchApi<Patient[]>("get_patient.php", {
+        term: encoded,
+        type: patientFrom,
+      });
 
       // Ignore results from a stale/superseded request.
       if (currentRequest !== requestId) return;
 
-      patients = Array.isArray(data?.data) ? data.data : [];
+      if (!body?.success) {
+        patients = [];
+        loading = false;
+        error = true;
+        errorMessage = body?.message || "";
+        return;
+      }
+
+      const data = Array.isArray(body.data) ? body.data : [];
+      patients = data;
       loading = false;
     } catch (err) {
-      if ((err as Error).name === "AbortError") return;
       if (currentRequest !== requestId) return;
       patients = [];
       loading = false;
@@ -106,11 +115,11 @@
 
   function handleClear() {
     clearTimeout(debounceTimer);
-    controller?.abort();
     inputValue = "";
     patients = [];
     loading = false;
     error = false;
+    errorMessage = "";
     open = false;
     inputRef?.focus();
   }
@@ -124,10 +133,10 @@
     } else {
       open = false;
       clearTimeout(debounceTimer);
-      controller?.abort();
       patients = [];
       loading = false;
       error = false;
+      errorMessage = "";
     }
   }
 
@@ -152,51 +161,50 @@
     }
   }
 
-  $effect(() => {
-    if (!open) return;
-    function onMouseDown(e: MouseEvent) {
-      const target = e.target as HTMLElement;
-      if (!target.closest("[data-patient-search]")) {
-        open = false;
-      }
-    }
-    document.addEventListener("mousedown", onMouseDown);
-    return () => document.removeEventListener("mousedown", onMouseDown);
-  });
+  // $effect(() => {
+  //   if (!open) return;
+  //   function onMouseDown(e: MouseEvent) {
+  //     const target = e.target as HTMLElement;
+  //     if (!target.closest("[data-patient-search]")) {
+  //       open = false;
+  //     }
+  //   }
+  //   document.addEventListener("mousedown", onMouseDown);
+  //   return () => document.removeEventListener("mousedown", onMouseDown);
+  // });
 
   $effect(() => () => {
     clearTimeout(debounceTimer);
-    controller?.abort();
   });
 </script>
 
-<div data-patient-search class={cn("relative", className)}>
-  <Command.Root shouldFilter={false}>
-    <MyInput
-      {placeholder}
-      value={inputValue}
-      oninput={handleInput}
-      onfocus={handleFocus}
-      onkeydown={handleKeyDown}
-      bind:ref={inputRef}
-      aria-label={ariaLabel}
-      aria-expanded={open}
-      aria-controls={open ? listId : undefined}
-      aria-autocomplete="list"
-      class={inputValue ? "pr-8" : undefined}
-      onClear={handleClear}
-    />
-    {#if open}
-      <div
-        id={listId}
-        role="listbox"
-        transition:fly={{ y: -4, duration: 150, easing: cubicOut }}
-        class="bg-popover text-popover-foreground absolute top-full left-0 right-0 z-50 mt-0 rounded-none border border-border shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
-      >
-        <Command.List class="static max-h-72">
+<div data-patient-search class={className}>
+  <Command.Root
+    shouldFilter={false}
+    class={cn("rounded-lg", open && " border border-ring/80 shadow-md")}
+  >
+    <Popover.Root bind:open = {open}>
+      <MyInput
+        {placeholder}
+        value={inputValue}
+        oninput={handleInput}
+        onfocus={handleFocus}
+        onkeydown={handleKeyDown}
+        bind:ref={inputRef}
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        aria-controls={open ? listId : undefined}
+        aria-autocomplete="list"
+        class={inputValue ? "pr-8" : undefined}
+        onClear={handleClear}
+      />
+      <Popover.Content>
+        <Command.List>
           {#if loading}
             <Command.Loading>
-              <div class="flex items-center gap-2 px-2 py-3 text-sm text-muted-foreground">
+              <div
+                class="flex items-center gap-2 px-2 py-3 text-sm text-muted-foreground"
+              >
                 <Loader class="size-4 animate-spin" />
                 {loadingText}
               </div>
@@ -204,40 +212,45 @@
           {:else if error}
             <Command.Empty>
               <div class="px-2 py-4 text-center text-sm text-destructive">
-                {errorText}
+                {errorMessage || errorText}
               </div>
             </Command.Empty>
-          {:else if displayedPatients.length === 0}
-            <Command.Empty>
-              <div class="px-2 py-4 text-center text-sm text-muted-foreground">{emptyText}</div>
-            </Command.Empty>
           {:else}
+            <Command.Empty>
+              <div class="px-2 py-4 text-center text-sm text-muted-foreground">
+                No results found.
+              </div>
+            </Command.Empty>
             <Command.Group>
               {#each displayedPatients as patient, i (patient.patient_id)}
                 <Command.Item
                   value={String(patient.patient_id)}
-                  onselect={() => handleSelect(patient)}
+                  onclick={() => handleSelect(patient)}
                   class="ps-item"
                   style="--i: {i}"
                 >
                   <div class="flex min-w-0 flex-col">
                     <span class="truncate">{patient.patient_name}</span>
                     <span class="truncate text-xs text-muted-foreground">
-                      {[patient.mobile, patient.visit_no, patient.doctor_name].filter(Boolean).join(" · ")}
+                      {[patient.mobile, patient.visit_no, patient.doctor_name]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </span>
                   </div>
                 </Command.Item>
               {/each}
             </Command.Group>
             {#if isTruncated}
-              <div class="px-2 py-1.5 text-center text-xs text-muted-foreground">
+              <div
+                class="px-2 py-1.5 text-center text-xs text-muted-foreground"
+              >
                 Showing {maxResults} of {patients.length} results
               </div>
             {/if}
           {/if}
         </Command.List>
-      </div>
-    {/if}
+      </Popover.Content>
+    </Popover.Root>
   </Command.Root>
 </div>
 
