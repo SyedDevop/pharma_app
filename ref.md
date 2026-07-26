@@ -8,8 +8,8 @@
 
 ## UI
 
-- For ui components using tailwindcss and sveltekit, use [shadcn-svelte](https://www.shadcn-svelte.com/create/preview-02?preset=b5J5mSnqi&fromPreview=true)
+- For ui components using tailwindcss and [shadcn](https://ui.shadcn.com/create?template=vite&preset=b5cSXOc5a&item=preview&pointer=true)
 
   ```sh
-  bun x shadcn-svelte init --preset b5J5mSnqi
+  bunx --bun shadcn@latest init --preset b5cSXOc5a --template vite --pointer
   ```
