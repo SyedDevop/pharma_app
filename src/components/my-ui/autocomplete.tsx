@@ -1,9 +1,8 @@
 import { Autocomplete as AutocompletePrimitive } from "@base-ui/react/autocomplete";
-
+import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { XCircleIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 const inputVariants = cva(
   "text-foreground placeholder:text-muted-foreground [[readonly]]:bg-muted/80 border-input focus-visible:border-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 dark:bg-input/30 focus-visible:ring-ring/50 flex w-full rounded-lg border bg-transparent text-sm transition-colors outline-none focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3 [[readonly]]:cursor-not-allowed",
@@ -288,22 +287,22 @@ const AutocompleteSeparator = ({
 
 export {
   Autocomplete,
-  AutocompleteValue,
-  AutocompleteTrigger,
-  AutocompleteInput,
-  AutocompleteStatus,
-  AutocompletePortal,
+  AutocompleteArrow,
   AutocompleteBackdrop,
-  AutocompletePositioner,
-  AutocompleteContent,
-  AutocompleteList,
+  AutocompleteClear,
   AutocompleteCollection,
-  AutocompleteRow,
-  AutocompleteItem,
+  AutocompleteContent,
+  AutocompleteEmpty,
   AutocompleteGroup,
   AutocompleteGroupLabel,
-  AutocompleteEmpty,
-  AutocompleteClear,
-  AutocompleteArrow,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+  AutocompletePortal,
+  AutocompletePositioner,
+  AutocompleteRow,
   AutocompleteSeparator,
+  AutocompleteStatus,
+  AutocompleteTrigger,
+  AutocompleteValue,
 };
