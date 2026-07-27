@@ -100,49 +100,51 @@ export function PatientSearch(props: Props) {
   const shouldRenderPopup = searchValue !== "";
   const actionRef = React.useRef<AutocompleteRootActions>(null);
   return (
-    <Autocomplete
-      items={searchResults}
-      openOnInputClick
-      value={searchValue}
-      onValueChange={setSearchValue}
-      itemToStringValue={() => ""}
-      filter={null}
-      actionsRef={actionRef}
-    >
-      <div className="flex flex-col items-start gap-2">
-        <Label htmlFor={id}>{props.title}</Label>
-        <AutocompleteInput
-          id={id}
-          placeholder={props.placeholder ?? "Search for a Patient"}
-          showTrigger
-          showClear
-          className="flex-1"
-        />
-      </div>
-      {shouldRenderPopup && (
-        <AutocompleteContent>
-          <AutocompleteStatus>{status}</AutocompleteStatus>
-          <AutocompleteList>
-            {(p: Patient) => (
-              <AutocompleteItem
-                key={p.patient_id}
-                value={p}
-                className="rounded-lg"
-                onClick={() => {
-                  props.onSelect?.(p);
-                }}
-              >
-                <div className="flex min-w-0 flex-col">
-                  <span className="truncate">{p.patient_name}</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {[p.mobile, p.visit_no, p.doctor_name].filter(Boolean).join(" · ")}
-                  </span>
-                </div>
-              </AutocompleteItem>
-            )}
-          </AutocompleteList>
-        </AutocompleteContent>
-      )}
-    </Autocomplete>
+    <div className="w-full">
+      <Autocomplete
+        items={searchResults}
+        openOnInputClick
+        value={searchValue}
+        onValueChange={setSearchValue}
+        itemToStringValue={() => ""}
+        filter={null}
+        actionsRef={actionRef}
+      >
+        <div className="flex flex-col items-start gap-2">
+          <Label htmlFor={id}>{props.title}</Label>
+          <AutocompleteInput
+            id={id}
+            placeholder={props.placeholder ?? "Search for a Patient"}
+            showTrigger
+            showClear
+            className="flex-1"
+          />
+        </div>
+        {shouldRenderPopup && (
+          <AutocompleteContent>
+            <AutocompleteStatus>{status}</AutocompleteStatus>
+            <AutocompleteList>
+              {(p: Patient) => (
+                <AutocompleteItem
+                  key={p.patient_id}
+                  value={p}
+                  className="rounded-lg"
+                  onClick={() => {
+                    props.onSelect?.(p);
+                  }}
+                >
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate">{p.patient_name}</span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {[p.mobile, p.visit_no, p.doctor_name].filter(Boolean).join(" · ")}
+                    </span>
+                  </div>
+                </AutocompleteItem>
+              )}
+            </AutocompleteList>
+          </AutocompleteContent>
+        )}
+      </Autocomplete>
+    </div>
   );
 }
