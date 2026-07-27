@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 function Index() {
   return (
     <div className="p-8">
-      <Card className="w-full max-w-sm">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Patient Search</CardTitle>
         </CardHeader>
         <CardContent className="w-full">
-          <div className="flex flex-row gap-2.5">
+          <div className="flex flex-row gap-2.5 [&>*]:flex-1">
             <PatientSearch
               title="IPD Patient Search"
               patientFrom="ipd"
