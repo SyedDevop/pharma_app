@@ -14,6 +14,12 @@ import {
 
 type PatientFom = "ipd" | "opd" | "customer";
 
+const accentMap: Record<PatientFom, string> = {
+  ipd: "oklch(0.65 0.15 55)",
+  opd: "oklch(0.511 0.096 186.391)",
+  customer: "oklch(0.52 0.11 260)",
+};
+
 async function searchPatients(term: string, from: PatientFom) {
   if (!term) return [];
   const encoded = encodeURIComponent(term);
@@ -28,7 +34,7 @@ async function searchPatients(term: string, from: PatientFom) {
 interface Props {
   onSelect?: (patient: Patient) => void;
   patientFrom: PatientFom;
-  title: string;
+  title?: string;
   placeholder?: string;
   debounceMs?: number;
 }
@@ -46,7 +52,7 @@ export function PatientSearch(props: Props) {
       setIsLoading(false);
       return undefined;
     }
-
+    if (searchValue.length < 3) return undefined;
     setIsLoading(true);
     setError(null);
 
@@ -97,7 +103,7 @@ export function PatientSearch(props: Props) {
     status = "Start typing to search patients...";
   }
 
-  const shouldRenderPopup = searchValue !== "";
+  const shouldRenderPopup = searchValue !== "" && searchValue.length >= 3;
   return (
     <div className="w-full">
       <Autocomplete
@@ -109,7 +115,7 @@ export function PatientSearch(props: Props) {
         filter={null}
       >
         <div className="flex flex-col items-start gap-2">
-          <Label htmlFor={id}>{props.title}</Label>
+          {props.title && <Label htmlFor={id}>{props.title}</Label>}
           <AutocompleteInput
             id={id}
             placeholder={props.placeholder ?? "Search for a Patient"}
@@ -126,13 +132,18 @@ export function PatientSearch(props: Props) {
                 <AutocompleteItem
                   key={p.patient_id}
                   value={p}
-                  className="rounded-lg"
+                  className="border-l-2 border-l-transparent transition-all data-highlighted:border-l-(--patient-accent) data-highlighted:pl-3"
+                  style={
+                    {
+                      "--patient-accent": accentMap[props.patientFrom],
+                    } as React.CSSProperties
+                  }
                   onClick={() => {
                     props.onSelect?.(p);
                   }}
                 >
-                  <div className="flex min-w-0 flex-col">
-                    <span className="truncate">{p.patient_name}</span>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="truncate font-medium text-foreground">{p.patient_name}</span>
                     <span className="truncate text-xs text-muted-foreground">
                       {[p.mobile, p.visit_no, p.doctor_name].filter(Boolean).join(" · ")}
                     </span>
