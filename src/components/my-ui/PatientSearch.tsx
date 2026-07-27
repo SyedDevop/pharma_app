@@ -98,7 +98,6 @@ export function PatientSearch(props: Props) {
   }
 
   const shouldRenderPopup = searchValue !== "";
-  const actionRef = React.useRef<AutocompleteRootActions>(null);
   return (
     <div className="w-full">
       <Autocomplete
@@ -108,7 +107,6 @@ export function PatientSearch(props: Props) {
         onValueChange={setSearchValue}
         itemToStringValue={() => ""}
         filter={null}
-        actionsRef={actionRef}
       >
         <div className="flex flex-col items-start gap-2">
           <Label htmlFor={id}>{props.title}</Label>
