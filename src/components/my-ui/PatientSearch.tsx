@@ -1,4 +1,3 @@
-import type { AutocompleteRootActions } from "@base-ui/react";
 import { CircleNotchIcon } from "@phosphor-icons/react";
 import React from "react";
 import { fetchApi } from "@/lib/api";
