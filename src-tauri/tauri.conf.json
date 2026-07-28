@@ -2,18 +2,17 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "pharma_app",
   "version": "0.1.0",
-  "identifier": "in.rushdainfotech.pharma",
+  "identifier": "in.vcarehospital",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "bun run build",
-    "frontendDist": "../build"
+    "frontendDist": "../dist"
   },
   "app": {
     "windows": [
       {
-        "title": "pharma",
-        "maximized": true,
+        "title": "pharma_app",
         "width": 800,
         "height": 600
       }

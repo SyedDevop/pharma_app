@@ -5,11 +5,6 @@
       "type": "local",
       "enabled": true,
       "command": ["bunx", "-y", "@hypothesi/tauri-mcp-server"]
-    },
-    "svelte": {
-      "type": "local",
-      "enabled": true,
-      "command": ["bunx", "-y", "@sveltejs/mcp"]
     }
   }
 }
