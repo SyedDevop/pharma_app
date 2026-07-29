@@ -1,11 +1,20 @@
 import path from "node:path";
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig, type Plugin } from "vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
+function reactDevtools(): Plugin {
+  return {
+    name: "react-devtools",
+    transformIndexHtml(_html, ctx) {
+      if (!ctx.server) return;
+      return [{ tag: "script", attrs: { src: "http://localhost:8097" } }];
+    },
+  };
+}
 // https://vite.dev/config/
 export default defineConfig(async () => ({
   plugins: [
@@ -14,6 +23,7 @@ export default defineConfig(async () => ({
       autoCodeSplitting: true,
     }),
     react(),
+    reactDevtools(),
     tailwindcss(),
   ],
   resolve: {
