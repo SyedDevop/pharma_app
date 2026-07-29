@@ -1,11 +1,13 @@
 import { CalendarDotsIcon, ClockUserIcon, InvoiceIcon } from "@phosphor-icons/react";
 import React from "react";
 import { fetchApi } from "@/lib/api";
+import { useInvoiceStore } from "@/store/invoice_db";
 import { Card, CardContent } from "../ui/card";
 import { Label } from "../ui/label";
 
 export function InvoiceInfo() {
-  const [invoiceNumber, setInvoiceNumber] = React.useState("XXXX-XX-XX/XXXXXX");
+  const invoiceNumber = useInvoiceStore((s) => s.invoiceNumber);
+  const setInvoiceNumber = useInvoiceStore((s) => s.setInvoiceNumber);
 
   const getInvoiceNum = async () => {
     const data = await fetchApi<string>("get_invoice_number.php", undefined);
@@ -29,9 +31,13 @@ export function InvoiceInfo() {
       <CardContent className="w-full flex grow gap-2">
         <div className="flex-1">
           <Label className="mb-2">Invoice Id</Label>
-          <div className=" p-2 bg-primary/15 shadow rounded-sm flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-sm bg-primary/15 p-2 shadow">
             <InvoiceIcon className="size-6" weight="thin" />
-            <span className="font-semibold">{invoiceNumber}</span>
+            {invoiceNumber ? (
+              <span className="font-semibold animate-in fade-in duration-300">{invoiceNumber}</span>
+            ) : (
+              <div className="h-5 w-28 animate-pulse rounded bg-primary/20" />
+            )}
           </div>
         </div>
         <div className="flex-1">
