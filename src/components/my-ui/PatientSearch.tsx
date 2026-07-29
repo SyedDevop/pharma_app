@@ -19,6 +19,27 @@ const accentMap: Record<PatientFom, string> = {
   customer: "oklch(0.52 0.11 260)",
 };
 
+const accent = {
+  ipd: {
+    bg: "bg-[oklch(0.65_0.15_55_/0.07)]",
+    border: "border-[oklch(0.65_0.15_55)]",
+    focus: "border-[oklch(0.65_0.15_55)]",
+    text: "text-[oklch(0.42_0.12_55)]",
+  },
+  opd: {
+    bg: "bg-[oklch(0.511_0.096_186.391_/_0.07)]",
+    border: "border-[oklch(0.511_0.096_186.391)]",
+    focus: "focus-[oklch(0.511_0.096_186.391)]",
+    text: "text-[oklch(0.38_0.08_186)]",
+  },
+  customer: {
+    bg: "bg-[oklch(0.52_0.11_260/0.07)]",
+    border: "border-[oklch(0.52_0.11_260)]",
+    focus: "focus-[oklch(0.52_0.11_260)]",
+    text: "text-[oklch(0.38_0.1_260)]",
+  },
+} as const;
+
 async function searchPatients(term: string, from: PatientFom) {
   if (!term) return [];
   const encoded = encodeURIComponent(term);
@@ -103,6 +124,8 @@ export function PatientSearch(props: Props) {
   }
 
   const shouldRenderPopup = searchValue !== "" && searchValue.length >= 3;
+  const style = accent[props.patientFrom];
+
   return (
     <div className="w-full">
       <Autocomplete
@@ -115,13 +138,20 @@ export function PatientSearch(props: Props) {
       >
         <div className="flex flex-col items-start gap-2">
           {props.title && <Label htmlFor={id}>{props.title}</Label>}
-          <AutocompleteInput
-            id={id}
-            placeholder={props.placeholder ?? "Search for a Patient"}
-            showTrigger
-            showClear
-            className="flex-1"
-          />
+          <div
+            className={`flex w-full items-center gap-2 border rounded-md ${style.bg} ${style.border} ${style.text}`}
+          >
+            <span className="pl-1 font-heading text-xs font-semibold tracking-wide uppercase">
+              {props.patientFrom}
+            </span>
+            <AutocompleteInput
+              id={id}
+              placeholder={props.placeholder ?? "Search for a Patient"}
+              showTrigger
+              showClear
+              className={`flex-1 border-0  ${style.focus}`}
+            />
+          </div>
         </div>
         {shouldRenderPopup && (
           <AutocompleteContent>
