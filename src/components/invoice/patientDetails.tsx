@@ -4,7 +4,11 @@ import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 
 export function PatientDetails() {
-  const patient = useInvoiceStore((state) => state.patient);
+  const patientName = useInvoiceStore((state) => state.patient.patient_name);
+  const mobile = useInvoiceStore((state) => state.patient.mobile);
+  const doctor_name = useInvoiceStore((state) => state.patient.doctor_name);
+  const visit_no = useInvoiceStore((state) => state.patient.visit_no);
+  const visit_type = useInvoiceStore((state) => state.patient.visit_type);
   const setPatient = useInvoiceStore((state) => state.updatePatientField);
 
   return (
@@ -19,7 +23,7 @@ export function PatientDetails() {
             <FieldLabel htmlFor="patient-name">Patient Name</FieldLabel>
             <Input
               id="patient-name"
-              value={patient.patient_name}
+              value={patientName}
               onChange={(e) => setPatient("patient_name", e.target.value)}
               placeholder="Patient Name"
             />
@@ -28,7 +32,7 @@ export function PatientDetails() {
             <FieldLabel htmlFor="mobile">Mobile</FieldLabel>
             <Input
               id="mobile"
-              value={patient.mobile}
+              value={mobile}
               type="number"
               onChange={(e) => setPatient("mobile", e.target.value)}
               className="no-spinner"
@@ -39,18 +43,18 @@ export function PatientDetails() {
             <FieldLabel htmlFor="doctor">Doctor</FieldLabel>
             <Input
               id="doctor"
-              value={patient.doctor_name}
+              value={doctor_name}
               onChange={(e) => setPatient("doctor_name", e.target.value)}
               placeholder="Referring Doctor"
             />
           </Field>
           <Field>
             <FieldLabel htmlFor="visit-no">Visit No</FieldLabel>
-            <Input id="visit-no" value={patient.visit_no} placeholder="Visit No" disabled />
+            <Input id="visit-no" value={visit_no} placeholder="Visit No" disabled />
           </Field>
           <Field>
             <FieldLabel htmlFor="visit-type">Visit Type</FieldLabel>
-            <Input id="visit-type" value={patient.visit_type} placeholder="Visit Type" disabled />
+            <Input id="visit-type" value={visit_type} placeholder="Visit Type" disabled />
           </Field>
         </FieldGroup>
       </CardContent>
