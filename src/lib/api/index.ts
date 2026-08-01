@@ -5,6 +5,7 @@ export const BASE_URL = "https://pharmacy.vcarehospital.in";
 type ApiEndpoints = {
   "get_invoice_number.php": undefined;
   "get_patient.php": { term: string; type: string };
+  "get_patient_balance.php": { patientId: number };
 };
 
 export type EndpointUrl = keyof ApiEndpoints;
@@ -15,8 +16,11 @@ export const fetchApi = async <T, U extends EndpointUrl = EndpointUrl>(
 ): Promise<ApiResponse<T>> => {
   const fetchUrl = new URL(`${BASE_URL}/api/${url}`);
   if (query) {
-    const searchParams = new URLSearchParams(query).toString();
-    fetchUrl.search = searchParams;
+    for (const [key, value] of Object.entries(query)) {
+      fetchUrl.searchParams.set(key, String(value));
+    }
+    //const searchParams = new URLSearchParams(query).toString();
+    //fetchUrl.search = searchParams;
   }
   const response = await fetch(fetchUrl);
   return response.json() as Promise<ApiResponse<T>>;

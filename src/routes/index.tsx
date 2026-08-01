@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GetPatient, InvoiceInfo } from "@/components/invoice";
+import { GetPatient, InvoiceHistory, InvoiceInfo } from "@/components/invoice";
 import { PatientDetails } from "@/components/invoice/patientDetails";
 import { useInvoiceStore } from "@/store/invoice_db";
 
@@ -10,6 +10,7 @@ function Index() {
       <InvoiceInfo />
       <GetPatient onSelect={setPatient} />
       <PatientDetails />
+      <InvoiceHistory />
     </div>
   );
 }
