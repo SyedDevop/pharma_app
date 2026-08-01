@@ -139,9 +139,9 @@ export function PatientSearch(props: Props) {
         <div className="flex flex-col items-start gap-2">
           {props.title && <Label htmlFor={id}>{props.title}</Label>}
           <div
-            className={`flex w-full items-center gap-2 border rounded-md ${style.bg} ${style.border} ${style.text}`}
+            className={`flex w-full items-center gap-2 rounded-md border ${style.bg} ${style.border} ${style.text}`}
           >
-            <span className="pl-1 font-heading text-xs font-semibold tracking-wide uppercase">
+            <span className="pl-1 font-heading font-semibold text-xs uppercase tracking-wide">
               {props.patientFrom}
             </span>
             <AutocompleteInput
@@ -149,7 +149,7 @@ export function PatientSearch(props: Props) {
               placeholder={props.placeholder ?? "Search for a Patient"}
               showTrigger
               showClear
-              className={`flex-1 border-0  ${style.focus}`}
+              className={`flex-1 border-0 ${style.focus}`}
             />
           </div>
         </div>
@@ -173,7 +173,7 @@ export function PatientSearch(props: Props) {
                 >
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="truncate font-medium text-foreground">{p.patient_name}</span>
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="truncate text-muted-foreground text-xs">
                       {[p.mobile, p.visit_no, p.doctor_name].filter(Boolean).join(" · ")}
                     </span>
                   </div>

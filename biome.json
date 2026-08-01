@@ -16,6 +16,14 @@
     "enabled": true,
     "rules": {
       "preset": "recommended",
+      "nursery": {
+        "useSortedClasses": {
+          "level": "error",
+          "options": {
+            "functions": ["clsx", "cva", "cn"]
+          }
+        }
+      },
       "suspicious": {
         "noExplicitAny": "warn"
       },
