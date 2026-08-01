@@ -27,30 +27,32 @@ export function InvoiceInfo() {
   }, []);
 
   return (
-    <Card className="w-full mb-4">
-      <CardContent className="w-full flex grow gap-2">
+    <Card className="mb-4 w-full">
+      <CardContent className="flex w-full grow gap-3">
         <div className="flex-1">
-          <Label className="mb-2">Invoice Id</Label>
-          <div className="flex items-center gap-2 rounded-sm bg-primary/15 p-2 shadow">
-            <InvoiceIcon className="size-6" weight="thin" />
+          <Label className="mb-2 text-muted-foreground">Invoice Id</Label>
+          <div className="flex items-center gap-2 rounded-lg border border-primary/15 bg-primary/5 p-2.5">
+            <InvoiceIcon className="size-6 text-primary" weight="thin" />
             {invoiceNumber ? (
-              <span className="font-semibold animate-in fade-in duration-300">{invoiceNumber}</span>
+              <span className="fade-in animate-in font-semibold duration-300">{invoiceNumber}</span>
             ) : (
               <div className="h-5 w-28 animate-pulse rounded bg-primary/20" />
             )}
           </div>
         </div>
+
         <div className="flex-1">
-          <Label className="mb-2">Date</Label>
-          <div className=" p-2 bg-primary/15 shadow rounded-sm flex items-center gap-2">
-            <CalendarDotsIcon className="size-6" weight="thin" />
+          <Label className="mb-2 text-muted-foreground">Date</Label>
+          <div className="flex items-center gap-2 rounded-lg border border-primary/15 bg-primary/5 p-2.5">
+            <CalendarDotsIcon className="size-6 text-primary" weight="thin" />
             <span className="font-semibold">{date}</span>
           </div>
         </div>
+
         <div className="flex-1">
-          <Label className="mb-2">Time</Label>
-          <div className=" p-2  bg-primary/15 shadow rounded-sm flex items-center gap-2">
-            <ClockUserIcon className="size-6" weight="thin" />
+          <Label className="mb-2 text-muted-foreground">Time</Label>
+          <div className="flex items-center gap-2 rounded-lg border border-primary/15 bg-primary/5 p-2.5">
+            <ClockUserIcon className="size-6 text-primary" weight="thin" />
             <span className="font-semibold">{time}</span>
           </div>
         </div>

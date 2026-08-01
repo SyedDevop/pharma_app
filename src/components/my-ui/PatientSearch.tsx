@@ -11,7 +11,7 @@ import {
   AutocompleteStatus,
 } from "./autocomplete";
 
-type PatientFom = "ipd" | "opd" | "customer";
+export type PatientFom = "ipd" | "opd" | "customer";
 
 const accentMap: Record<PatientFom, string> = {
   ipd: "oklch(0.65 0.15 55)",
@@ -19,7 +19,7 @@ const accentMap: Record<PatientFom, string> = {
   customer: "oklch(0.52 0.11 260)",
 };
 
-const accent = {
+export const accent = {
   ipd: {
     bg: "bg-[oklch(0.65_0.15_55_/0.07)]",
     border: "border-[oklch(0.65_0.15_55)]",
@@ -141,9 +141,6 @@ export function PatientSearch(props: Props) {
           <div
             className={`flex w-full items-center gap-2 rounded-md border ${style.bg} ${style.border} ${style.text}`}
           >
-            <span className="pl-1 font-heading font-semibold text-xs uppercase tracking-wide">
-              {props.patientFrom}
-            </span>
             <AutocompleteInput
               id={id}
               placeholder={props.placeholder ?? "Search for a Patient"}
