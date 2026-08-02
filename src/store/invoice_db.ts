@@ -15,7 +15,7 @@ type Actions = {
   updatePatient: (patch: Partial<Patient>) => void; // bonus: multi-field update
   resetPatient: () => void;
 
-  fetchPatientBalance: (id: number) => Promise<void>;
+  fetchPatientBalance: (p: Patient) => Promise<void>;
   resetPatientBalance: () => void;
 };
 
@@ -30,8 +30,8 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   resetPatient: () => set({ patient: EMPTY_PATIENT }),
 
   patientBalance: undefined,
-  fetchPatientBalance: async (id) => {
-    set({ patientBalance: await fetchPatientBalance(id) });
+  fetchPatientBalance: async (p: Patient) => {
+    set({ patientBalance: await fetchPatientBalance(p) });
   },
   resetPatientBalance: () => set({ patientBalance: undefined }),
 }));
