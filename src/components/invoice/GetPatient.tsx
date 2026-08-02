@@ -6,6 +6,7 @@ import {
 } from "@phosphor-icons/react";
 import { accent, PatientSearch } from "@/components/my-ui/PatientSearch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useInvoiceStore } from "@/store/invoice_db";
 import { Separator } from "../ui/separator";
 
 const columns = [
@@ -34,6 +35,7 @@ interface Props {
 }
 
 export function GetPatient({ onSelect }: Props) {
+  const fetchPatientBalance = useInvoiceStore((s) => s.fetchPatientBalance);
   return (
     <Card className="mt-4 gap-0 py-0">
       <CardHeader className="bg-primary/5 py-2">
@@ -68,7 +70,10 @@ export function GetPatient({ onSelect }: Props) {
                 </div>
                 <PatientSearch
                   patientFrom={col.key}
-                  onSelect={onSelect}
+                  onSelect={(p) => {
+                    onSelect?.(p);
+                    fetchPatientBalance(p);
+                  }}
                   placeholder={col.description}
                 />
               </section>
