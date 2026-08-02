@@ -10,7 +10,7 @@ function Index() {
   return (
     <div className="px-8 py-3">
       <Card className="gap-0 py-0">
-        <CardContent className="space-y-6 py-6">
+        <CardContent className="space-y-3 py-6">
           <InvoiceInfo />
           <Separator />
           <GetPatient onSelect={setPatient} />

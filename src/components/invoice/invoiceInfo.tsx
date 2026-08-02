@@ -2,7 +2,6 @@ import { CalendarDotsIcon, ClockUserIcon, InvoiceIcon } from "@phosphor-icons/re
 import React from "react";
 import { fetchApi } from "@/lib/api";
 import { useInvoiceStore } from "@/store/invoice_db";
-import { Card, CardContent } from "../ui/card";
 import { Label } from "../ui/label";
 
 export function InvoiceInfo() {
@@ -22,6 +21,7 @@ export function InvoiceInfo() {
     hour12: true,
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only on the first run should this be run
   React.useEffect(() => {
     getInvoiceNum();
   }, []);

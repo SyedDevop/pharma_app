@@ -5,9 +5,7 @@ import {
   StorefrontIcon,
 } from "@phosphor-icons/react";
 import { accent, PatientSearch } from "@/components/my-ui/PatientSearch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useInvoiceStore } from "@/store/invoice_db";
-import { Separator } from "../ui/separator";
 
 const columns = [
   {

@@ -65,7 +65,6 @@ export function PatientSearch(props: Props) {
   const [searchResults, setSearchResults] = React.useState<Patient[]>([]);
   const [error, setError] = React.useState<string | null>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   React.useEffect(() => {
     if (!searchValue) {
       setSearchResults([]);
@@ -102,7 +101,7 @@ export function PatientSearch(props: Props) {
       clearTimeout(timeoutId);
       ignore = true;
     };
-  }, [searchValue]);
+  }, [searchValue, props.debounceMs, props.patientFrom]);
 
   let status: React.ReactNode = "";
 

@@ -1,7 +1,5 @@
 import { ScrollIcon } from "@phosphor-icons/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
-import { Separator } from "@/components/ui/separator";
 
 import { rupeesFmt } from "@/lib/my-utils";
 import { useInvoiceStore } from "@/store/invoice_db";
