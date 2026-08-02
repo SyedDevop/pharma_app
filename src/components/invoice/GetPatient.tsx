@@ -6,6 +6,7 @@ import {
 } from "@phosphor-icons/react";
 import { accent, PatientSearch } from "@/components/my-ui/PatientSearch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "../ui/separator";
 
 const columns = [
   {
@@ -35,7 +36,7 @@ interface Props {
 export function GetPatient({ onSelect }: Props) {
   return (
     <Card className="mt-4 gap-0 py-0">
-      <CardHeader className="border-border border-b bg-primary/5 py-5">
+      <CardHeader className="bg-primary/5 py-2">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <MagnifyingGlassIcon className="size-4.5" weight="bold" />
@@ -48,7 +49,7 @@ export function GetPatient({ onSelect }: Props) {
           </div>
         </div>
       </CardHeader>
-
+      <Separator />
       <CardContent className="py-6">
         <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
           {columns.map((col) => {

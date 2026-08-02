@@ -3,6 +3,7 @@ import { useInvoiceStore } from "@/store/invoice_db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
+import { Separator } from "../ui/separator";
 
 export function PatientDetails() {
   const patientName = useInvoiceStore((state) => state.patient.patient_name);
@@ -13,8 +14,8 @@ export function PatientDetails() {
   const setPatient = useInvoiceStore((state) => state.updatePatientField);
 
   return (
-    <Card className="mt-4 gap-0 overflow-hidden py-0">
-      <CardHeader className="border-border border-b bg-primary/5 py-5">
+    <Card className="mt-4 gap-0 py-0">
+      <CardHeader className="bg-primary/5 py-2">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <UserCircleCheckIcon className="size-4.5" />
@@ -30,6 +31,7 @@ export function PatientDetails() {
         </div>
       </CardHeader>
 
+      <Separator />
       <CardContent className="py-6">
         <FieldGroup className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
           <Field>
