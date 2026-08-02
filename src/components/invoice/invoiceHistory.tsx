@@ -50,22 +50,16 @@ export function InvoiceHistory() {
   );
 }
 
-const InvoiceHistoryCard = ({ children }: { children: React.ReactNode }) => (
-  <Card className="mt-4 gap-0 py-0">
-    <CardHeader className="bg-primary/5 py-2">
-      <div className="flex items-center gap-3">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <ScrollIcon className="size-4.5" weight="bold" />
-        </div>
-        <div>
-          <CardTitle className="font-semibold text-base">Patient Invoices</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            View all previous invoices generated for this patient.
-          </CardDescription>
-        </div>
+const InvoiceHistoryCard = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div>
+      <div className="mb-4 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
+        <ScrollIcon className="size-4 text-primary" weight="bold" />
+        <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
+          Patient Invoice History
+        </h2>
       </div>
-    </CardHeader>
-    <Separator />
-    <CardContent className="py-6"> {children}</CardContent>
-  </Card>
-);
+      {children}
+    </div>
+  );
+};
