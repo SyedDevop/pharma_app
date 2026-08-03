@@ -27,7 +27,7 @@ type PatientBalance = {
 type Invoice = {
   id: number;
   invoice_no: string;
-  invoice_date: Date;
+  invoice_date: string;
   opd_ipd_no?: string;
   patient_type?: PatientType;
   customer_name?: string;

@@ -24,6 +24,7 @@ interface Props {
 export function InvoiceHistoryPopup(props: Props) {
   const name = useInvoiceStore((state) => state.patient.patient_name);
   const patientBalance = useInvoiceStore((state) => state.patientBalance);
+  console.log(patientBalance);
 
   return (
     <Dialog onOpenChange={props.onChange} open={props.open}>
@@ -86,46 +87,60 @@ export function InvoiceHistoryPopup(props: Props) {
             </ItemGroup>
           </DialogDescription>
         </DialogHeader>
-        <div className="no-scrollbar max-h-[75vh] overflow-y-auto rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>No.</TableHead>
-                <TableHead>Invoice No</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Visit No</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Net Total</TableHead>
-                <TableHead>Paid</TableHead>
-                <TableHead>Balance</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Mode</TableHead>
-                <TableHead>Remark</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>01</TableCell>
-                <TableCell>VC-26-27/1234567</TableCell>
-                <TableCell>01/01/2023</TableCell>
-                <TableCell>OPD-23698</TableCell>
-                <TableCell>OPD</TableCell>
-                <TableCell>60.00</TableCell>
-                <TableCell>60.00</TableCell>
-                <TableCell>00.00</TableCell>
-                <TableCell>PAID</TableCell>
-                <TableCell>UPI</TableCell>
-                <TableCell>---</TableCell>
-                <TableCell>---</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+        <div className="no-scrollbar relative max-h-[75vh] overflow-y-auto rounded-md border">
+          {patientBalance?.invoices ? (
+            <IHTable invoices={patientBalance.invoices} />
+          ) : (
+            <div className="flex items-center justify-center text-muted-foreground">
+              <span className="text-sm">No previous invoices found for this patient.</span>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+function IHTable({ invoices }: { invoices: Invoice[] }) {
+  return (
+    <Table>
+      <TableHeader className="fixed top-0 bg-red-100 shadow-[0_1px_0_0_rgba(0,0,0,0.1)]">
+        <TableRow>
+          <TableHead>No.</TableHead>
+          <TableHead>Invoice No</TableHead>
+          <TableHead>Date</TableHead>
+          <TableHead>Visit No</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Net Total</TableHead>
+          <TableHead>Paid</TableHead>
+          <TableHead>Balance</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Mode</TableHead>
+          <TableHead>Remark</TableHead>
+          <TableHead>Action</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {invoices.map((invoice, i) => (
+          <TableRow key={`${invoice.id}-${invoice.invoice_no}`}>
+            <TableCell>{i + 1}</TableCell>
+            <TableCell>{invoice.invoice_no}</TableCell>
+            <TableCell>{invoice.invoice_date}</TableCell>
+            <TableCell>{invoice.opd_ipd_no}</TableCell>
+            <TableCell>{invoice.patient_type}</TableCell>
+            <TableCell>{rupeesFmt(invoice.net_total)}</TableCell>
+            <TableCell>{rupeesFmt(invoice.paid_amount)}</TableCell>
+            <TableCell>{rupeesFmt(invoice.balance_amount)}</TableCell>
+            <TableCell>{invoice.payment_status}</TableCell>
+            <TableCell>{invoice.payment_mode}</TableCell>
+            <TableCell>{invoice.remarks}</TableCell>
+            <TableCell>---</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
 function StatCard({
   icon: Icon,
   label,
