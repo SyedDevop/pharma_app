@@ -9,6 +9,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -101,18 +102,28 @@ export function InvoiceHistoryPopup(props: Props) {
   );
 }
 function IHTable({ invoices }: { invoices: Invoice[] }) {
+  const totals = invoices.reduce(
+    (acc, inv) => {
+      acc.net += Number(inv.net_total) || 0;
+      acc.paid += Number(inv.paid_amount) || 0;
+      acc.balance += Number(inv.balance_amount) || 0;
+      return acc;
+    },
+    { net: 0, paid: 0, balance: 0 },
+  );
+
   return (
-    <Table>
-      <TableHeader className="fixed top-0 bg-red-100 shadow-[0_1px_0_0_rgba(0,0,0,0.1)]">
-        <TableRow>
+    <Table containerClassName="no-scrollbar max-h-[75vh] overflow-auto rounded-md border">
+      <TableHeader className="sticky top-0 z-10 bg-slate-200">
+        <TableRow className="font-semibold text-base">
           <TableHead>No.</TableHead>
           <TableHead>Invoice No</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>Visit No</TableHead>
           <TableHead>Type</TableHead>
-          <TableHead>Net Total</TableHead>
-          <TableHead>Paid</TableHead>
-          <TableHead>Balance</TableHead>
+          <TableHead className="text-right">Net Total</TableHead>
+          <TableHead className="text-right">Paid</TableHead>
+          <TableHead className="text-right">Balance</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Mode</TableHead>
           <TableHead>Remark</TableHead>
@@ -127,9 +138,15 @@ function IHTable({ invoices }: { invoices: Invoice[] }) {
             <TableCell>{invoice.invoice_date}</TableCell>
             <TableCell>{invoice.opd_ipd_no}</TableCell>
             <TableCell>{invoice.patient_type}</TableCell>
-            <TableCell>{rupeesFmt(invoice.net_total)}</TableCell>
-            <TableCell>{rupeesFmt(invoice.paid_amount)}</TableCell>
-            <TableCell>{rupeesFmt(invoice.balance_amount)}</TableCell>
+            <TableCell className="text-right tabular-nums">
+              {rupeesFmt(invoice.net_total)}
+            </TableCell>
+            <TableCell className="text-right tabular-nums">
+              {rupeesFmt(invoice.paid_amount)}
+            </TableCell>
+            <TableCell className="text-right tabular-nums">
+              {rupeesFmt(invoice.balance_amount)}
+            </TableCell>
             <TableCell>{invoice.payment_status}</TableCell>
             <TableCell>{invoice.payment_mode}</TableCell>
             <TableCell>{invoice.remarks}</TableCell>
@@ -137,6 +154,23 @@ function IHTable({ invoices }: { invoices: Invoice[] }) {
           </TableRow>
         ))}
       </TableBody>
+      <TableFooter className="sticky bottom-0 z-10 bg-slate-300">
+        <TableRow>
+          <TableCell colSpan={5} className="font-semibold">
+            Total ({invoices.length})
+          </TableCell>
+          <TableCell className="text-right font-semibold tabular-nums">
+            {rupeesFmt(totals.net)}
+          </TableCell>
+          <TableCell className="text-right font-semibold tabular-nums">
+            {rupeesFmt(totals.paid)}
+          </TableCell>
+          <TableCell className="text-right font-semibold tabular-nums">
+            {rupeesFmt(totals.balance)}
+          </TableCell>
+          <TableCell colSpan={4} />
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 }
