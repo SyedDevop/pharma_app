@@ -5,18 +5,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { rupeesFmt } from "@/lib/my-utils";
-import { useInvoiceStore } from "@/store/invoice_db";
-import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "@/components/ui/table";
+import { rupeesFmt } from "@/lib/my-utils";
+import { useInvoiceStore } from "@/store/invoice_db";
+import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
 
 interface Props {
   open: boolean;
@@ -87,7 +86,7 @@ export function InvoiceHistoryPopup(props: Props) {
             </ItemGroup>
           </DialogDescription>
         </DialogHeader>
-        <div className="no-scrollbar max-h-[50vh] overflow-y-auto rounded-md border">
+        <div className="no-scrollbar max-h-[75vh] overflow-y-auto rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -125,5 +124,38 @@ export function InvoiceHistoryPopup(props: Props) {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+function StatCard({
+  icon: Icon,
+  label,
+  sub,
+  value,
+  tone,
+}: {
+  icon: React.ElementType;
+  label: string;
+  sub?: string;
+  value: React.ReactNode;
+  tone?: "destructive" | "success" | "default";
+}) {
+  const toneClass =
+    tone === "destructive"
+      ? "text-destructive"
+      : tone === "success"
+        ? "text-emerald-600"
+        : "text-foreground";
+
+  return (
+    <div className="flex items-start gap-3 rounded-lg border bg-card p-4">
+      <div className="rounded-md bg-muted p-2">
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </div>
+      <div className="space-y-0.5">
+        <p className="font-medium text-muted-foreground text-xs">{label}</p>
+        <p className={`font-semibold text-xl tabular-nums ${toneClass}`}>{value}</p>
+        {sub && <p className="text-muted-foreground text-xs">{sub}</p>}
+      </div>
+    </div>
   );
 }
