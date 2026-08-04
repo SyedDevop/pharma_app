@@ -15,7 +15,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { rupeesFmt } from "@/lib/my-utils";
+import { cn } from "@/lib/utils";
 import { useInvoiceStore } from "@/store/invoice_db";
+import { Badge } from "../ui/badge";
 import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
 
 interface Props {
@@ -44,7 +46,7 @@ export function InvoiceHistoryPopup(props: Props) {
                       </span>
                       Invoiced
                     </div>
-                    <div className="text-emerald-600">
+                    <div className="text-success">
                       <span className="pr-1 font-semibold text-xl tabular-nums">
                         {patientBalance?.paid_count}
                       </span>
@@ -114,8 +116,8 @@ function IHTable({ invoices }: { invoices: Invoice[] }) {
 
   return (
     <Table containerClassName="no-scrollbar max-h-[75vh] overflow-auto rounded-md border">
-      <TableHeader className="sticky top-0 z-10 bg-slate-200">
-        <TableRow className="font-semibold text-base">
+      <TableHeader className="sticky top-0 z-10">
+        <TableRow className="bg-muted [&_th]:font-semibold [&_th]:text-muted-foreground [&_th]:text-xs [&_th]:uppercase [&_th]:tracking-wide">
           <TableHead>No.</TableHead>
           <TableHead>Invoice No</TableHead>
           <TableHead>Date</TableHead>
@@ -132,40 +134,54 @@ function IHTable({ invoices }: { invoices: Invoice[] }) {
       </TableHeader>
       <TableBody>
         {invoices.map((invoice, i) => (
-          <TableRow key={`${invoice.id}-${invoice.invoice_no}`}>
-            <TableCell>{i + 1}</TableCell>
-            <TableCell>{invoice.invoice_no}</TableCell>
-            <TableCell>{invoice.invoice_date}</TableCell>
-            <TableCell>{invoice.opd_ipd_no}</TableCell>
-            <TableCell>{invoice.patient_type}</TableCell>
-            <TableCell className="text-right tabular-nums">
+          <TableRow key={`${invoice.id}-${invoice.invoice_no}`} className="even:bg-muted/40">
+            <TableCell className="text-muted-foreground">{i + 1}</TableCell>
+            <TableCell className="font-medium">{invoice.invoice_no}</TableCell>
+            <TableCell className="text-muted-foreground">{invoice.invoice_date}</TableCell>
+            <TableCell className="text-muted-foreground">{invoice.opd_ipd_no}</TableCell>
+            <TableCell className="text-muted-foreground">{invoice.patient_type}</TableCell>
+            <TableCell className="text-right font-medium tabular-nums">
               {rupeesFmt(invoice.net_total)}
             </TableCell>
-            <TableCell className="text-right tabular-nums">
+            <TableCell className="text-right text-muted-foreground tabular-nums">
               {rupeesFmt(invoice.paid_amount)}
             </TableCell>
-            <TableCell className="text-right tabular-nums">
+            <TableCell
+              className={cn(
+                "text-right tabular-nums",
+                Number(invoice.balance_amount) > 0
+                  ? "font-medium text-destructive"
+                  : "text-muted-foreground",
+              )}
+            >
               {rupeesFmt(invoice.balance_amount)}
             </TableCell>
-            <TableCell>{invoice.payment_status}</TableCell>
-            <TableCell>{invoice.payment_mode}</TableCell>
-            <TableCell>{invoice.remarks}</TableCell>
-            <TableCell>---</TableCell>
+            <TableCell>
+              <StatusBadge status={invoice.payment_status} />
+            </TableCell>
+            <TableCell className="text-muted-foreground">{invoice.payment_mode}</TableCell>
+            <TableCell className="text-muted-foreground">{invoice.remarks}</TableCell>
+            <TableCell className="text-muted-foreground">---</TableCell>
           </TableRow>
         ))}
       </TableBody>
-      <TableFooter className="sticky bottom-0 z-10 bg-slate-300">
-        <TableRow>
+      <TableFooter className="sticky bottom-0 z-10">
+        <TableRow className="border-t bg-muted">
           <TableCell colSpan={5} className="font-semibold">
             Total ({invoices.length})
           </TableCell>
           <TableCell className="text-right font-semibold tabular-nums">
             {rupeesFmt(totals.net)}
           </TableCell>
-          <TableCell className="text-right font-semibold tabular-nums">
+          <TableCell className="text-right font-semibold text-muted-foreground tabular-nums">
             {rupeesFmt(totals.paid)}
           </TableCell>
-          <TableCell className="text-right font-semibold tabular-nums">
+          <TableCell
+            className={cn(
+              "text-right font-semibold tabular-nums",
+              totals.balance > 0 ? "text-destructive" : "text-muted-foreground",
+            )}
+          >
             {rupeesFmt(totals.balance)}
           </TableCell>
           <TableCell colSpan={4} />
@@ -175,36 +191,8 @@ function IHTable({ invoices }: { invoices: Invoice[] }) {
   );
 }
 
-function StatCard({
-  icon: Icon,
-  label,
-  sub,
-  value,
-  tone,
-}: {
-  icon: React.ElementType;
-  label: string;
-  sub?: string;
-  value: React.ReactNode;
-  tone?: "destructive" | "success" | "default";
-}) {
-  const toneClass =
-    tone === "destructive"
-      ? "text-destructive"
-      : tone === "success"
-        ? "text-emerald-600"
-        : "text-foreground";
-
-  return (
-    <div className="flex items-start gap-3 rounded-lg border bg-card p-4">
-      <div className="rounded-md bg-muted p-2">
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </div>
-      <div className="space-y-0.5">
-        <p className="font-medium text-muted-foreground text-xs">{label}</p>
-        <p className={`font-semibold text-xl tabular-nums ${toneClass}`}>{value}</p>
-        {sub && <p className="text-muted-foreground text-xs">{sub}</p>}
-      </div>
-    </div>
-  );
+function StatusBadge({ status }: { status: PaymentStatus }) {
+  const variant: "success" | "warning" | "destructive" =
+    status === "PAID" ? "success" : status === "PARTIAL" ? "warning" : "destructive";
+  return <Badge variant={variant}>{status}</Badge>;
 }
