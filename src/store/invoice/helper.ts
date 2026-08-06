@@ -10,6 +10,29 @@ export const EMPTY_PATIENT: Patient = {
   mobile: "",
   address: "",
 } as const;
+export const EMPTY_CUSTOMER_FORMS: CustomerTypeFormData = {
+  retail: {
+    previous_due: "",
+    advance_available: "",
+    advance_applied: "",
+  },
+  b2b: {
+    name: "",
+    gstin: "",
+    address: "",
+  },
+  staff: {
+    employee_id: "",
+    name: "",
+    department: "",
+  },
+  insurance: {
+    company: "",
+    policy_tpa: "",
+    auth_code: "",
+    coverage_amount: "",
+  },
+} as const;
 
 export async function fetchPatientBalance(p: Patient) {
   var visit_id: string = "";

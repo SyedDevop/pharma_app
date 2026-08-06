@@ -43,3 +43,36 @@ type Invoice = {
 type PatientType = "IPD" | "OPD" | "CUSTOMER" | "";
 type PaymentMode = "MIX" | "UPI" | "CARD" | "CASH";
 type PaymentStatus = "PAID" | "DUE" | "PARTIAL";
+type CustomerTypes = "retail" | "b2b" | "staff" | "insurance";
+
+type RetailForm = {
+  previous_due: string;
+  advance_available: string;
+  advance_applied: string;
+};
+
+type B2BForm = {
+  name: string;
+  gstin: string;
+  address: string;
+};
+
+type StaffForm = {
+  employee_id: string;
+  name: string;
+  department: string;
+};
+
+type InsuranceForm = {
+  company: string;
+  policy_tpa: string;
+  auth_code: string;
+  coverage_amount: string;
+};
+
+type CustomerTypeFormData = {
+  retail: RetailForm;
+  b2b: B2BForm;
+  staff: StaffForm;
+  insurance: InsuranceForm;
+};
