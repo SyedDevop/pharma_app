@@ -24,7 +24,6 @@ import {
   type ExpiryTone,
   expiryDotClass,
   expiryTone,
-  formatExpiry,
   MedicineSearch,
 } from "../my-ui/medicineSearch";
 
@@ -80,9 +79,7 @@ function ExpiryCell({ expiry }: { expiry: string }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-sm">
       <span className={cn("size-2 shrink-0 rounded-[1px]", expiryDotClass[tone])} />
-      <span className={cn("font-medium tabular-nums", EXPIRY_TEXT_CLASS[tone])}>
-        {formatExpiry(expiry)}
-      </span>
+      <span className={cn("font-medium tabular-nums", EXPIRY_TEXT_CLASS[tone])}>{expiry}</span>
     </span>
   );
 }
