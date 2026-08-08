@@ -147,7 +147,7 @@ export default function InvoiceLineTable() {
                 <TableCell className="w-20">
                   <Input
                     type="number"
-                    className="no-spinner text-right"
+                    className="no-spinner text-right px-1"
                     value={row.qty}
                     onChange={(e) => updateRow(idx, "qty", e.target.value)}
                   />
