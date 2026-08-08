@@ -88,7 +88,10 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   },
   setInvoiceItemsFromMedicineItem: (med, item) => {
     set((s) => ({
-      invoiceItems: [...s.invoiceItems, mapMedicineItemToInvoiceItem(med, item)],
+      invoiceItems: [
+        ...s.invoiceItems.filter((i) => i.id !== item.id),
+        mapMedicineItemToInvoiceItem(med, item),
+      ],
     }));
   },
   deleteInvoiceItems: (id: string) => {

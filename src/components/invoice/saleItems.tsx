@@ -1,4 +1,25 @@
 import { PillIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
+import React from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useInvoiceStore } from "@/store/invoice_db";
+import { MedicineSearch } from "../my-ui/medicineSearch";
 
 export function SalesItems() {
   return (
@@ -36,32 +57,15 @@ export function SalesItems() {
   );
 }
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useInvoiceStore } from "@/store/invoice_db";
-import { Autocomplete } from "../my-ui/autocomplete";
-
 export default function InvoiceLineTable() {
   const lastItemRef = React.useRef<HTMLInputElement>(null);
   const invoiceItems = useInvoiceStore((state) => state.invoiceItems);
 
   const addEmptyRow = useInvoiceStore((state) => state.addEmptyInvoiceItem);
+  const setInvoiceItemsFromMedicineItem = useInvoiceStore(
+    (state) => state.setInvoiceItemsFromMedicineItem,
+  );
+
   const removeRow = useInvoiceStore((state) => state.deleteInvoiceItems);
   const updateRow = useInvoiceStore((state) => state.updateInvoiceItemsField);
 
@@ -134,11 +138,13 @@ export default function InvoiceLineTable() {
                   </Button>
                 </TableCell>
                 <TableCell className="min-w-55">
-                  <Input
+                  <MedicineSearch
                     ref={isLast ? lastItemRef : null}
-                    placeholder="Scan barcode or type medicine name..."
                     value={row.item}
-                    onChange={(e) => updateRow(idx, "item", e.target.value)}
+                    onValueChange={(value) => updateRow(idx, "item", value)}
+                    onSelect={(med) => {
+                      setInvoiceItemsFromMedicineItem(med, row);
+                    }}
                   />
                 </TableCell>
                 <TableCell className="min-w-25">

@@ -1,5 +1,4 @@
 type ItemDiscountType = "%" | "₹";
-type ScheduleType = "H" | "H1" | "X" | "OTC" | "" | null;
 type InvoiceItemFormData = {
   id: string;
   item: string;
@@ -20,6 +19,7 @@ type InvoiceItemFormData = {
   amount: string;
 };
 
+type ScheduleType = "H" | "H1" | "X" | "OTC" | "" | null;
 type MedicineItem = {
   id: string;
   name: string;
