@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CustomerType, GetPatient, InvoiceHistory, InvoiceInfo } from "@/components/invoice";
+import {
+  CustomerType,
+  GetPatient,
+  InvoiceHistory,
+  InvoiceInfo,
+  SalesItems,
+} from "@/components/invoice";
 import { PatientDetails } from "@/components/invoice/patientDetails";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -25,6 +31,8 @@ function Index() {
           )}
           <Separator />
           <CustomerType />
+          <Separator />
+          <SalesItems />
         </CardContent>
       </Card>
     </div>

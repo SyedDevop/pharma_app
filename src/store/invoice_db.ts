@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { EMPTY_CUSTOMER_FORMS, EMPTY_PATIENT, fetchPatientBalance } from "./invoice/helper";
+import { EMPTY_CUSTOMER_FORMS, EMPTY_PATIENT, emptyInvoiceItem } from "./invoice/const_data.ts";
+import { fetchPatientBalance, mapMedicineItemToInvoiceItem } from "./invoice/helper";
 
 type State = {
   invoiceNumber: string;
@@ -7,6 +8,8 @@ type State = {
   patientBalance?: PatientBalance;
   customerType: CustomerTypes;
   customerTypeForm: CustomerTypeFormData;
+
+  invoiceItems: InvoiceItemFormData[];
 };
 
 type Actions = {
@@ -31,6 +34,16 @@ type Actions = {
     value: CustomerTypeFormData[T][K],
   ) => void;
   resetCustomerTypeForm: () => void;
+
+  setInvoiceItemsFromMedicineItem: (med: MedicineItem, item: InvoiceItemFormData) => void;
+  addEmptyInvoiceItem: () => void;
+  deleteInvoiceItems: (id: string) => void;
+  updateInvoiceItemsField: <K extends keyof InvoiceItemFormData>(
+    index: number,
+    key: K,
+    value: InvoiceItemFormData[K],
+  ) => void;
+  updateInvoiceItems: (index: number, patch: Partial<InvoiceItemFormData>) => void;
 };
 
 export const useInvoiceStore = create<State & Actions>((set) => ({
@@ -68,4 +81,27 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       },
     })),
   resetCustomerTypeForm: () => set({ customerTypeForm: undefined }),
+  invoiceItems: Array.of(emptyInvoiceItem()),
+
+  addEmptyInvoiceItem: () => {
+    set((s) => ({ invoiceItems: [...s.invoiceItems, emptyInvoiceItem()] }));
+  },
+  setInvoiceItemsFromMedicineItem: (med, item) => {
+    set((s) => ({
+      invoiceItems: [...s.invoiceItems, mapMedicineItemToInvoiceItem(med, item)],
+    }));
+  },
+  deleteInvoiceItems: (id: string) => {
+    set((s) => ({ invoiceItems: s.invoiceItems.filter((i) => i.id !== id) }));
+  },
+  updateInvoiceItemsField: (index, k, v) => {
+    set((s) => ({
+      invoiceItems: s.invoiceItems.map((i, idx) => (idx === index ? { ...i, [k]: v } : i)),
+    }));
+  },
+  updateInvoiceItems: (index, patch) => {
+    set((s) => ({
+      invoiceItems: s.invoiceItems.map((i, idx) => (idx === index ? { ...i, ...patch } : i)),
+    }));
+  },
 }));

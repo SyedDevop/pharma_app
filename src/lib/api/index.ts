@@ -6,6 +6,7 @@ type ApiEndpoints = {
   "get_invoice_number.php": undefined;
   "get_patient.php": { term: string; type: string };
   "get_patient_balance.php": { patient_id?: string; visit_id?: string };
+  "get_inventory.php": { query: string };
 };
 
 export type EndpointUrl = keyof ApiEndpoints;

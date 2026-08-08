@@ -9,8 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useInvoiceStore } from "@/store/invoice_db";
 import { PaField } from "../my-ui/paFiels";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 
 const tabs = [
   {
@@ -74,7 +72,6 @@ export function CustomerType() {
 }
 
 export function CustomerTypeForm() {
-  const customerType = useInvoiceStore((s) => s.customerType);
   const form = useInvoiceStore((s) => s.customerTypeForm);
   const set = useInvoiceStore((s) => s.updateCustomerField);
 
