@@ -18,39 +18,94 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import { useInvoiceStore } from "@/store/invoice_db";
-import { MedicineSearch } from "../my-ui/medicineSearch";
+import {
+  type ExpiryTone,
+  expiryDotClass,
+  expiryTone,
+  formatExpiry,
+  MedicineSearch,
+} from "../my-ui/medicineSearch";
+
+const ALIGN_CLASS = {
+  left: "",
+  right: "text-right tabular-nums",
+  center: "text-center",
+} as const;
+
+type HeaderAlign = keyof typeof ALIGN_CLASS;
+
+const COLUMNS: { label: string; align?: HeaderAlign }[] = [
+  { label: "#" },
+  { label: "" },
+  { label: "ITEM" },
+  { label: "BATCH" },
+  { label: "EXPIRY" },
+  { label: "QTY", align: "right" },
+  { label: "STORE", align: "right" },
+  { label: "BATCH", align: "right" },
+  { label: "PACK", align: "right" },
+  { label: "MRP", align: "right" },
+  { label: "SELL RATE", align: "right" },
+  { label: "DISC", align: "right" },
+  { label: "GST%", align: "right" },
+  { label: "CGST", align: "right" },
+  { label: "SGST", align: "right" },
+  { label: "AMOUNT", align: "right" },
+  { label: "RACK", align: "center" },
+];
+
+const EXPIRY_TEXT_CLASS: Record<ExpiryTone, string> = {
+  expired: "text-red-600 dark:text-red-400",
+  critical: "text-orange-700 dark:text-orange-400",
+  warning: "text-yellow-700 dark:text-yellow-400",
+  normal: "text-foreground",
+  unknown: "text-muted-foreground",
+};
+
+const LEGEND = [
+  { label: "Expiring 31–60 days", color: "bg-orange-500" },
+  { label: "Expiring 61–90 days", color: "bg-yellow-400" },
+  { label: "Normal", color: "bg-green-500" },
+  { label: "H/H1/X Scheduled", color: "bg-purple-600" },
+  { label: "OTC Scheduled", color: "bg-blue-500" },
+] as const;
+
+function ExpiryCell({ expiry }: { expiry: string }) {
+  const tone = expiryTone(expiry);
+  if (tone === "unknown") {
+    return <span className="text-muted-foreground text-sm">—</span>;
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 text-sm">
+      <span className={cn("size-2 shrink-0 rounded-[1px]", expiryDotClass[tone])} />
+      <span className={cn("font-medium tabular-nums", EXPIRY_TEXT_CLASS[tone])}>
+        {formatExpiry(expiry)}
+      </span>
+    </span>
+  );
+}
 
 export function SalesItems() {
   return (
     <div>
-      <div className="mb-2 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
+      <div className="mb-2 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l bg-primary/10 py-1 pr-4 pl-3">
         <PillIcon className="size-4 text-primary" weight="bold" />
         <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
           Sales Item
         </h2>
       </div>
-      <div className="flex gap-4 rounded-sm bg-muted p-2">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 bg-orange-500" />
-          Expiring 31–60 days
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 bg-yellow-400" />
-          Expiring 61–90 days
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 bg-green-500" />
-          Normal
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 bg-purple-600" />
-          H/H1/X Scheduled
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 bg-blue-500" />
-          OTC Scheduled
-        </div>
+      <div className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 rounded-sm bg-muted px-3 py-1.5">
+        {LEGEND.map((item) => (
+          <span
+            key={item.label}
+            className="inline-flex items-center gap-1.5 text-muted-foreground text-xs"
+          >
+            <span className={cn("size-2 rounded-[1px]", item.color)} />
+            {item.label}
+          </span>
+        ))}
       </div>
       <InvoiceLineTable />
     </div>
@@ -92,30 +147,15 @@ export default function InvoiceLineTable() {
       <Table>
         <TableHeader>
           <TableRow className="bg-neutral-900 hover:bg-neutral-900">
-            {[
-              "#",
-              "",
-              "ITEM",
-              "BATCH",
-              "EXPIRY",
-              "QTY",
-              "STORE STOCK",
-              "BATCH STOCK",
-              "PACK",
-              "MRP",
-              "SELL RATE",
-              "DISC",
-              "GST%",
-              "CGST",
-              "SGST",
-              "AMOUNT",
-              "RACK",
-            ].map((h) => (
+            {COLUMNS.map((col) => (
               <TableHead
-                key={h}
-                className="whitespace-nowrap font-semibold text-neutral-100 text-xs tracking-wide"
+                key={col.label}
+                className={cn(
+                  "whitespace-nowrap font-semibold text-neutral-100 text-xs tracking-wide",
+                  ALIGN_CLASS[col.align ?? "left"],
+                )}
               >
-                {h}
+                {col.label}
               </TableHead>
             ))}
           </TableRow>
@@ -125,10 +165,17 @@ export default function InvoiceLineTable() {
           {invoiceItems.map((row, idx) => {
             const isLast = idx === invoiceItems.length - 1;
             return (
-              <TableRow key={row.id}>
-                <TableCell className="text-muted-foreground text-sm">{idx + 1}</TableCell>
+              <TableRow key={row.id} className="odd:bg-muted/30 hover:bg-primary/6">
+                <TableCell className="text-muted-foreground text-sm tabular-nums">
+                  {(idx + 1).toString().padStart(2, "0")}
+                </TableCell>
                 <TableCell>
-                  <Button size="icon" variant="destructive" onClick={() => removeRow(row.id)}>
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    onClick={() => removeRow(row.id)}
+                    title="Remove row"
+                  >
                     <XIcon />
                   </Button>
                 </TableCell>
@@ -140,35 +187,52 @@ export default function InvoiceLineTable() {
                     onSelect={(med) => {
                       setInvoiceItemsFromMedicineItem(med, row);
                     }}
+                    schedule={row.schedule ?? undefined}
                   />
                 </TableCell>
-                <TableCell className="min-w-25">{row.batch}</TableCell>
-                <TableCell className="min-w-25">{row.expiry}</TableCell>
+                <TableCell className="min-w-25 text-sm">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    {row.batch}
+                  </div>
+                </TableCell>
+                <TableCell className="min-w-25">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    <ExpiryCell expiry={row.expiry} />
+                  </div>
+                </TableCell>
                 <TableCell className="w-20">
                   <Input
                     type="number"
-                    className="no-spinner text-right px-1"
+                    className="no-spinner px-1 text-right tabular-nums"
                     value={row.qty}
                     onChange={(e) => updateRow(idx, "qty", e.target.value)}
                   />
                 </TableCell>
-                <TableCell className="w-24 text-right text-muted-foreground text-sm">
-                  {row.storeStock}
+                <TableCell className="w-16 text-right">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    {row.storeStock}
+                  </div>
                 </TableCell>
-                <TableCell className="w-24 text-right text-muted-foreground text-sm">
-                  {row.batchStock}
+                <TableCell className="w-16 text-right">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    {row.batchStock}
+                  </div>
                 </TableCell>
-                <TableCell className="w-20">{row.pack}</TableCell>
-                <TableCell className="w-24">{row.mrp}</TableCell>
+                <TableCell className="w-20 text-right text-sm tabular-nums">{row.pack}</TableCell>
+                <TableCell className="w-24 text-right text-sm tabular-nums">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    {row.mrp}
+                  </div>
+                </TableCell>
                 <TableCell className="w-28">
                   <Input
                     type="number"
-                    className="no-spinner text-right"
+                    className="no-spinner text-right tabular-nums"
                     value={row.sellRate}
                     onChange={(e) => updateRow(idx, "sellRate", e.target.value)}
                   />
                 </TableCell>
-                <TableCell className="min-w-35">
+                <TableCell className="w-35">
                   <div className="flex items-center">
                     <Select
                       defaultValue="%"
@@ -185,16 +249,32 @@ export default function InvoiceLineTable() {
                     </Select>
                     <Input
                       type="number"
-                      className="no-spinner rounded-l-none border-l-0 text-right"
+                      className="no-spinner rounded-l-none border-l-0 text-right tabular-nums"
                       value={row.disc}
                       onChange={(e) => updateRow(idx, "disc", e.target.value)}
                     />
                   </div>
                 </TableCell>
-                <TableCell className="w-20">{row.gstPct}</TableCell>
-                <TableCell className="w-20 text-right text-sm">{row.cgst}</TableCell>
-                <TableCell className="w-20 text-right text-sm">{row.sgst}</TableCell>
-                <TableCell className="w-24 text-right font-medium text-sm">{row.amount}</TableCell>
+                <TableCell className="w-20 text-right">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    {row.gstPct}
+                  </div>
+                </TableCell>
+                <TableCell className="w-20 text-right">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    {row.cgst}
+                  </div>
+                </TableCell>
+                <TableCell className="w-20 text-right">
+                  <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
+                    {row.sgst}
+                  </div>
+                </TableCell>
+                <TableCell className="w-24 text-right">
+                  <div className="rounded-sm border bg-primary/5 p-1 font-semibold text-sm tabular-nums">
+                    {row.amount}
+                  </div>
+                </TableCell>
                 <TableCell className="w-16 text-center text-muted-foreground text-sm">—</TableCell>
               </TableRow>
             );
@@ -206,7 +286,7 @@ export default function InvoiceLineTable() {
         <Button variant="outline" size="sm" onClick={addRow} className="gap-1">
           <PlusIcon className="h-4 w-4" />
           Add Row
-          <kbd className="ml-1 rounded border bg-muted px-1.5 py-0.5 font-semibold text-[10px]">
+          <kbd className="ml-1 rounded border bg-primary/5 px-1.5 py-0.5 font-semibold text-[10px]">
             F2
           </kbd>
         </Button>

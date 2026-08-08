@@ -37,6 +37,7 @@ export function mapMedicineItemToInvoiceItem(med: MedicineItem, item: InvoiceIte
   return {
     ...item,
     item: med.name,
+    schedule: med.schedule,
     batch: med.batch,
     expiry: med.exp_date,
     pack: med.packing,
@@ -46,8 +47,8 @@ export function mapMedicineItemToInvoiceItem(med: MedicineItem, item: InvoiceIte
     mrp: med.mrp.toString(),
     sellRate: med.unit_mrp.toString(),
     gstPct: med.gst.toString(),
-    cgst: amountAndGst.cgst.toString(),
-    sgst: amountAndGst.sgst.toString(),
-    amount: amountAndGst.amount.toString(),
+    cgst: amountAndGst.cgst.toFixed(2),
+    sgst: amountAndGst.sgst.toFixed(2),
+    amount: amountAndGst.amount.toFixed(2),
   } satisfies InvoiceItemFormData;
 }

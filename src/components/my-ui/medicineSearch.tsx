@@ -3,6 +3,7 @@ import React from "react";
 
 import { fetchApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { InputGroupAddon, InputGroupText } from "../ui/input-group";
 import {
   Autocomplete,
   AutocompleteContent,
@@ -16,6 +17,7 @@ type MedicineItemRes = {
   count: number;
   items: MedicineItem[];
 };
+
 async function searchMedicines(term: string): Promise<MedicineItem[]> {
   if (!term) return [];
   // Note: do NOT encodeURIComponent here — fetchApi already runs the value
@@ -23,14 +25,8 @@ async function searchMedicines(term: string): Promise<MedicineItem[]> {
   const body = await fetchApi<MedicineItemRes>("get_inventory.php", {
     query: term,
   });
-  console.log(body);
-
   return Array.isArray(body.data.items) ? body.data.items : [];
 }
-
-/* ------------------------------------------------------------------ */
-/* expiry + schedule helpers (exported — the table uses them too)      */
-/* ------------------------------------------------------------------ */
 
 export type ExpiryTone = "expired" | "critical" | "warning" | "normal" | "unknown";
 
@@ -60,14 +56,6 @@ export function parseExpiry(raw?: string | null): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-export function formatExpiry(raw?: string | null): string {
-  const date = parseExpiry(raw);
-  if (!date) return raw?.trim() ?? "";
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear()).slice(-2);
-  return `${month}/${year}`;
-}
-
 export function daysToExpiry(raw?: string | null): number | null {
   const date = parseExpiry(raw);
   if (!date) return null;
@@ -92,20 +80,13 @@ export const expiryDotClass: Record<ExpiryTone, string> = {
   unknown: "bg-neutral-400",
 };
 
-export function isScheduled(schedule: ScheduleType): boolean {
-  return schedule === "H" || schedule === "H1" || schedule === "X";
-}
-
-/* ------------------------------------------------------------------ */
-/* component                                                           */
-/* ------------------------------------------------------------------ */
-
 interface MedicineSearchProps {
   ref?: React.Ref<HTMLInputElement>;
   /** The text currently in the cell (`row.item`). */
   value: string;
   onValueChange: (value: string) => void;
   onSelect: (medicine: MedicineItem) => void;
+  schedule?: ScheduleType;
   placeholder?: string;
   debounceMs?: number;
   minChars?: number;
@@ -118,6 +99,7 @@ export function MedicineSearch({
   value,
   onValueChange,
   onSelect,
+  schedule,
   placeholder = "Scan barcode or type medicine name...",
   debounceMs = 250,
   minChars = 2,
@@ -208,15 +190,31 @@ export function MedicineSearch({
       itemToStringValue={(item: MedicineItem) => item.name}
       filter={null}
     >
-      <AutocompleteInput
-        ref={ref}
-        size="sm"
-        disabled={disabled}
-        autoComplete="off"
-        spellCheck={false}
-        placeholder={placeholder}
-        className={cn("w-full", className)}
-      />
+      <InputGroupText className="gap-0">
+        <AutocompleteInput
+          ref={ref}
+          size="sm"
+          disabled={disabled}
+          autoComplete="off"
+          spellCheck={false}
+          placeholder={placeholder}
+          className={cn("w-full", schedule && "rounded-l-none border-l-0", className)}
+        />
+        {schedule && (
+          <InputGroupAddon>
+            <span
+              className={cn(
+                "rounded-l-lg p-1.5 px-2 font-semibold text-[10px] uppercase",
+                schedule === "OTC"
+                  ? "bg-blue-500/10 text-blue-700"
+                  : "bg-purple-600/10 text-purple-700",
+              )}
+            >
+              {schedule}
+            </span>
+          </InputGroupAddon>
+        )}
+      </InputGroupText>
 
       {canSearch && (
         <AutocompleteContent
@@ -244,7 +242,6 @@ export function MedicineSearch({
 
 function MedicineRow({ medicine }: { medicine: MedicineItem }) {
   const tone = expiryTone(medicine.exp_date);
-  const scheduled = isScheduled(medicine.schedule);
 
   return (
     <div className="flex w-full min-w-0 items-start justify-between gap-3">
@@ -252,17 +249,16 @@ function MedicineRow({ medicine }: { medicine: MedicineItem }) {
         <div className="flex min-w-0 items-center gap-2">
           <span
             className={cn("inline-block size-2 shrink-0 rounded-[1px]", expiryDotClass[tone])}
-            title={tone === "expired" ? "Expired" : `Expires ${formatExpiry(medicine.exp_date)}`}
+            title={tone === "expired" ? "Expired" : `Expires ${medicine.exp_date}`}
           />
           <span className="truncate font-medium text-foreground">{medicine.name}</span>
-          {scheduled && (
-            <span className="shrink-0 rounded-sm bg-purple-600/10 px-1 py-px font-semibold text-[10px] text-purple-700 uppercase">
-              {medicine.schedule}
-            </span>
-          )}
-          {medicine.schedule === "OTC" && (
+          {medicine.schedule === "OTC" ? (
             <span className="shrink-0 rounded-sm bg-blue-500/10 px-1 py-px font-semibold text-[10px] text-blue-700 uppercase">
               OTC
+            </span>
+          ) : (
+            <span className="shrink-0 rounded-sm bg-purple-600/10 px-1 py-px font-semibold text-[10px] text-purple-700 uppercase">
+              {medicine.schedule}
             </span>
           )}
           {medicine.is_narcotic === 1 && (
@@ -274,7 +270,7 @@ function MedicineRow({ medicine }: { medicine: MedicineItem }) {
         <span className="truncate text-muted-foreground text-xs">
           {[
             medicine.batch && `Batch ${medicine.batch}`,
-            medicine.exp_date && `Exp ${formatExpiry(medicine.exp_date)}`,
+            medicine.exp_date && `Exp ${medicine.exp_date}`,
             medicine.packing,
             medicine.rack && `Rack ${medicine.rack}`,
           ]

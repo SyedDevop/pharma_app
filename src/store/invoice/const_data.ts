@@ -37,8 +37,9 @@ export const emptyInvoiceItem = (): InvoiceItemFormData =>
   ({
     id: crypto.randomUUID(),
     item: "",
-    batch: "",
-    expiry: "",
+    schedule: "",
+    batch: "—",
+    expiry: "—",
     qty: "1",
     storeStock: "0",
     batchStock: "0",

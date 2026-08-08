@@ -2,6 +2,7 @@ type ItemDiscountType = "%" | "₹";
 type InvoiceItemFormData = {
   id: string;
   item: string;
+  schedule: ScheduleType;
   batch: string;
   expiry: string;
   qty: string;
