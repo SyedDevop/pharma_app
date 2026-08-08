@@ -128,13 +128,8 @@ export default function InvoiceLineTable() {
               <TableRow key={row.id}>
                 <TableCell className="text-muted-foreground text-sm">{idx + 1}</TableCell>
                 <TableCell>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                    onClick={() => removeRow(row.id)}
-                  >
-                    <XIcon className="h-4 w-4" />
+                  <Button size="icon" variant="destructive" onClick={() => removeRow(row.id)}>
+                    <XIcon />
                   </Button>
                 </TableCell>
                 <TableCell className="min-w-55">
@@ -147,16 +142,12 @@ export default function InvoiceLineTable() {
                     }}
                   />
                 </TableCell>
-                <TableCell className="min-w-25">
-                  <Input placeholder="—" value={row.batch} disabled />
-                </TableCell>
-                <TableCell className="min-w-25">
-                  <Input placeholder="MM/YY" value={row.expiry} disabled />
-                </TableCell>
+                <TableCell className="min-w-25">{row.batch}</TableCell>
+                <TableCell className="min-w-25">{row.expiry}</TableCell>
                 <TableCell className="w-20">
                   <Input
                     type="number"
-                    className="text-right"
+                    className="no-spinner text-right"
                     value={row.qty}
                     onChange={(e) => updateRow(idx, "qty", e.target.value)}
                   />
@@ -168,25 +159,23 @@ export default function InvoiceLineTable() {
                   {row.batchStock}
                 </TableCell>
                 <TableCell className="w-20">{row.pack}</TableCell>
-                <TableCell className="w-24">
-                  <Input type="number" className="text-right" value={row.mrp} disabled />
-                </TableCell>
+                <TableCell className="w-24">{row.mrp}</TableCell>
                 <TableCell className="w-28">
                   <Input
                     type="number"
-                    className="text-right"
+                    className="no-spinner text-right"
                     value={row.sellRate}
                     onChange={(e) => updateRow(idx, "sellRate", e.target.value)}
                   />
                 </TableCell>
                 <TableCell className="min-w-35">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center">
                     <Select
                       defaultValue="%"
                       value={row.discType}
                       onValueChange={(v) => updateRow(idx, "discType", v as ItemDiscountType)}
                     >
-                      <SelectTrigger className="w-16">
+                      <SelectTrigger className="rounded-r-none border-r-0">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -196,15 +185,13 @@ export default function InvoiceLineTable() {
                     </Select>
                     <Input
                       type="number"
-                      className="text-right"
+                      className="no-spinner rounded-l-none border-l-0 text-right"
                       value={row.disc}
                       onChange={(e) => updateRow(idx, "disc", e.target.value)}
                     />
                   </div>
                 </TableCell>
-                <TableCell className="w-20">
-                  <Input type="number" className="text-right" value={row.gstPct} disabled />
-                </TableCell>
+                <TableCell className="w-20">{row.gstPct}</TableCell>
                 <TableCell className="w-20 text-right text-sm">{row.cgst}</TableCell>
                 <TableCell className="w-20 text-right text-sm">{row.sgst}</TableCell>
                 <TableCell className="w-24 text-right font-medium text-sm">{row.amount}</TableCell>
