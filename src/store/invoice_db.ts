@@ -4,6 +4,7 @@ import {
   calcInvoiceItemGstAndAmount,
   fetchPatientBalance,
   mapMedicineItemToInvoiceItem,
+  RE_CALC_FOR,
 } from "./invoice/helper";
 
 type State = {
@@ -105,9 +106,8 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
     set((s) => {
       const prev = s.invoiceItems[index];
       if (!prev || prev[k] === v) return s;
-
       const draft = { ...prev, [k]: v };
-      if (k === "qty" || k === "sellRate") {
+      if (RE_CALC_FOR.has(k)) {
         const amounts = calcInvoiceItemGstAndAmount(draft, {
           sellRate: Number(draft.sellRate),
           gstPer: Number(draft.gstPct),

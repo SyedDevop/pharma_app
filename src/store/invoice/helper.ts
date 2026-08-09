@@ -16,6 +16,13 @@ export async function fetchPatientBalance(p: Patient) {
   return data.data;
 }
 
+export const RE_CALC_FOR = new Set<keyof InvoiceItemFormData>([
+  "qty",
+  "sellRate",
+  "gstPct",
+  "disc",
+  "discType",
+]);
 export function calcInvoiceItemGstAndAmount(
   item: InvoiceItemFormData,
   { sellRate, gstPer }: { sellRate: number; gstPer: number },
