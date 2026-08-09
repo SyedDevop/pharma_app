@@ -1,14 +1,17 @@
+import { PillIcon, UserCircleCheckIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   CustomerType,
   GetPatient,
   InvoiceHistory,
   InvoiceInfo,
+  LEGEND,
   SalesItems,
 } from "@/components/invoice";
 import { PatientDetails } from "@/components/invoice/patientDetails";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { useInvoiceStore } from "@/store/invoice_db";
 
 function Index() {
@@ -17,6 +20,21 @@ function Index() {
   return (
     <div className="px-8 py-3">
       <Card className="gap-0 py-0">
+        <CardHeader className="bg-primary/5 py-2">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <PillIcon className="size-4.5" />
+            </div>
+            <div>
+              <CardTitle className="font-semibold text-base text-foreground">
+                Invoice Info
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                All the information about the invoice and patient.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
         <CardContent className="space-y-3 py-6">
           <InvoiceInfo />
           <Separator />
@@ -31,7 +49,37 @@ function Index() {
           )}
           <Separator />
           <CustomerType />
-          <Separator />
+        </CardContent>
+      </Card>
+
+      <Card className="mt-4 gap-0 py-0">
+        <CardHeader className="flex justify-between bg-primary/5 py-2">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <PillIcon className="size-4.5" />
+            </div>
+            <div>
+              <CardTitle className="font-semibold text-base text-foreground">Sales Items</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                This section contains all the sales items
+              </CardDescription>
+            </div>
+          </div>
+          <div className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 rounded-sm bg-muted px-3 py-1.5">
+            {LEGEND.map((item) => (
+              <span
+                key={item.label}
+                className="inline-flex items-center gap-1.5 text-muted-foreground text-xs"
+              >
+                <span className={cn("size-2 rounded-[1px]", item.color)} />
+                {item.label}
+              </span>
+            ))}
+          </div>
+        </CardHeader>
+
+        <Separator />
+        <CardContent className="px-0 py-1">
           <SalesItems />
         </CardContent>
       </Card>

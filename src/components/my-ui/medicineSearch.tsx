@@ -207,6 +207,7 @@ export function MedicineSearch({
           spellCheck={false}
           placeholder={placeholder}
           className={cn("w-full", schedule && "rounded-l-none border-l-0", className)}
+          autoFocus
         />
         {schedule && (
           <InputGroupAddon>

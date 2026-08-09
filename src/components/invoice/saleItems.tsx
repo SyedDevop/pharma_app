@@ -65,7 +65,7 @@ const EXPIRY_TEXT_CLASS: Record<ExpiryTone, string> = {
   unknown: "text-muted-foreground",
 };
 
-const LEGEND = [
+export const LEGEND = [
   { label: "Expiring 31–60 days", color: "bg-orange-500" },
   { label: "Expiring 61–90 days", color: "bg-yellow-400" },
   { label: "Normal", color: "bg-green-500" },
@@ -91,23 +91,6 @@ function ExpiryCell({ expiry }: { expiry: string }) {
 export function SalesItems() {
   return (
     <div>
-      <div className="mb-2 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l bg-primary/10 py-1 pr-4 pl-3">
-        <PillIcon className="size-4 text-primary" weight="bold" />
-        <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
-          Sales Item
-        </h2>
-      </div>
-      <div className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 rounded-sm bg-muted px-3 py-1.5">
-        {LEGEND.map((item) => (
-          <span
-            key={item.label}
-            className="inline-flex items-center gap-1.5 text-muted-foreground text-xs"
-          >
-            <span className={cn("size-2 rounded-[1px]", item.color)} />
-            {item.label}
-          </span>
-        ))}
-      </div>
       <InvoiceLineTable />
     </div>
   );
@@ -144,8 +127,8 @@ export default function InvoiceLineTable() {
   }, [addRow]);
 
   return (
-    <div className="w-full overflow-x-auto rounded-sm border">
-      <Table>
+    <div>
+      <Table containerClassName="rounded-sm border">
         <TableHeader>
           <TableRow className="bg-neutral-900 hover:bg-neutral-900">
             {COLUMNS.map((col) => (
@@ -285,7 +268,14 @@ export default function InvoiceLineTable() {
       </Table>
 
       <div className="flex justify-end p-2">
-        <Button variant="outline" size="lg" onClick={addRow}>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={addRow}
+          onBlur={() => {
+            addEmptyRow();
+          }}
+        >
           <PlusIcon className="h-4 w-4" />
           Add Row
           <Kbd data-icon="inline-end">F2</Kbd>
