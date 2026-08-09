@@ -26,6 +26,7 @@ import {
   expiryTone,
   MedicineSearch,
 } from "../my-ui/medicineSearch";
+import { Kbd } from "../ui/kbd";
 
 const ALIGN_CLASS = {
   left: "",
@@ -280,13 +281,11 @@ export default function InvoiceLineTable() {
         </TableBody>
       </Table>
 
-      <div className="p-2">
-        <Button variant="outline" size="sm" onClick={addRow} className="gap-1">
+      <div className="flex justify-end p-2">
+        <Button variant="outline" size="lg" onClick={addRow}>
           <PlusIcon className="h-4 w-4" />
           Add Row
-          <kbd className="ml-1 rounded border bg-primary/5 px-1.5 py-0.5 font-semibold text-[10px]">
-            F2
-          </kbd>
+          <Kbd data-icon="inline-end">F2</Kbd>
         </Button>
       </div>
     </div>
