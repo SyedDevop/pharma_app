@@ -13,8 +13,8 @@ type State = {
   patientBalance?: PatientBalance;
   customerType: CustomerTypes;
   customerTypeForm: CustomerTypeFormData;
-
   invoiceItems: InvoiceItemFormData[];
+  maxDiscount: number;
 };
 
 type Actions = {
@@ -52,6 +52,7 @@ type Actions = {
 };
 
 export const useInvoiceStore = create<State & Actions>((set) => ({
+  maxDiscount: 10,
   invoiceNumber: "",
   setInvoiceNumber: (num) => set({ invoiceNumber: num }),
 
@@ -107,6 +108,16 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       const prev = s.invoiceItems[index];
       if (!prev || prev[k] === v) return s;
       const draft = { ...prev, [k]: v };
+      const _discNum = Number(draft.disc);
+      const _saleNum = Number(draft.sellRate);
+      draft.sellRate = Math.min(_saleNum, Number(draft.mrp)).toString();
+      if (k === "discType" || k === "disc") {
+        const disAmount =
+          draft.discType === "%"
+            ? Math.min(_discNum, s.maxDiscount)
+            : Math.min(_discNum, Math.round(_saleNum * s.maxDiscount) / 100);
+        draft.disc = disAmount.toString();
+      }
       if (RE_CALC_FOR.has(k)) {
         const amounts = calcInvoiceItemGstAndAmount(draft, {
           sellRate: Number(draft.sellRate),

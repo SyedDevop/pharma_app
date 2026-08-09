@@ -226,6 +226,7 @@ export default function InvoiceLineTable() {
                     type="number"
                     className="no-spinner text-right tabular-nums"
                     value={row.sellRate}
+                    max={row.mrp}
                     onChange={(e) => updateRow(idx, "sellRate", e.target.value)}
                   />
                 </TableCell>
