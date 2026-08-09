@@ -111,6 +111,7 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       const _discNum = Number(draft.disc);
       const _saleNum = Number(draft.sellRate);
       draft.sellRate = Math.min(_saleNum, Number(draft.mrp)).toString();
+      draft.qty = Math.min(Number(draft.qty), Number(draft.storeStock)).toString();
       if (k === "discType" || k === "disc") {
         const disAmount =
           draft.discType === "%"

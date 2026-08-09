@@ -1,4 +1,4 @@
-import { PillIcon, UserCircleCheckIcon } from "@phosphor-icons/react";
+import { PillIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   CustomerType,

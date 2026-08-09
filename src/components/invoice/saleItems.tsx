@@ -1,4 +1,4 @@
-import { PillIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
+import { PlusIcon, XIcon } from "@phosphor-icons/react";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ const COLUMNS: { label: string; align?: HeaderAlign }[] = [
   { label: "#" },
   { label: "" },
   { label: "ITEM" },
-  { label: "BATCH" },
+  { label: "BATCH NO" },
   { label: "EXPIRY" },
   { label: "QTY", align: "right" },
   { label: "STORE", align: "right" },
@@ -163,7 +163,7 @@ export default function InvoiceLineTable() {
                     <XIcon />
                   </Button>
                 </TableCell>
-                <TableCell className="min-w-55">
+                <TableCell className="min-w-100">
                   <MedicineSearch
                     ref={isLast ? lastItemRef : null}
                     value={row.item}
@@ -184,12 +184,13 @@ export default function InvoiceLineTable() {
                     <ExpiryCell expiry={row.expiry} />
                   </div>
                 </TableCell>
-                <TableCell className="w-20">
+                <TableCell className="min-w-20">
                   <Input
                     type="number"
                     className="no-spinner px-1 text-right tabular-nums"
                     value={row.qty}
                     onChange={(e) => updateRow(idx, "qty", e.target.value)}
+                    max={row.batchStock}
                   />
                 </TableCell>
                 <TableCell className="w-16 text-right">
@@ -208,7 +209,7 @@ export default function InvoiceLineTable() {
                     {row.mrp}
                   </div>
                 </TableCell>
-                <TableCell className="w-28">
+                <TableCell className="min-w-20">
                   <Input
                     type="number"
                     className="no-spinner text-right tabular-nums"
