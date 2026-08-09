@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { EMPTY_CUSTOMER_FORMS, EMPTY_PATIENT, emptyInvoiceItem } from "./invoice/const_data.ts";
-import { fetchPatientBalance, mapMedicineItemToInvoiceItem } from "./invoice/helper";
+import {
+  calcInvoiceItemGstAndAmount,
+  fetchPatientBalance,
+  mapMedicineItemToInvoiceItem,
+} from "./invoice/helper";
 
 type State = {
   invoiceNumber: string;
@@ -81,8 +85,8 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       },
     })),
   resetCustomerTypeForm: () => set({ customerTypeForm: undefined }),
-  invoiceItems: Array.of(emptyInvoiceItem()),
 
+  invoiceItems: Array.of(emptyInvoiceItem()),
   addEmptyInvoiceItem: () => {
     set((s) => ({ invoiceItems: [...s.invoiceItems, emptyInvoiceItem()] }));
   },
@@ -98,9 +102,24 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
     set((s) => ({ invoiceItems: s.invoiceItems.filter((i) => i.id !== id) }));
   },
   updateInvoiceItemsField: (index, k, v) => {
-    set((s) => ({
-      invoiceItems: s.invoiceItems.map((i, idx) => (idx === index ? { ...i, [k]: v } : i)),
-    }));
+    set((s) => {
+      const prev = s.invoiceItems[index];
+      if (!prev || prev[k] === v) return s;
+
+      const draft = { ...prev, [k]: v };
+      if (k === "qty" || k === "sellRate") {
+        const amounts = calcInvoiceItemGstAndAmount(draft, {
+          sellRate: Number(draft.sellRate),
+          gstPer: Number(draft.gstPct),
+        });
+        draft.cgst = amounts.cgst.toFixed(2);
+        draft.sgst = amounts.sgst.toFixed(2);
+        draft.amount = amounts.amount.toFixed(2);
+      }
+      const invoiceItems = s.invoiceItems.slice();
+      invoiceItems[index] = draft;
+      return { invoiceItems };
+    });
   },
   updateInvoiceItems: (index, patch) => {
     set((s) => ({

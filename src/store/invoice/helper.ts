@@ -16,23 +16,27 @@ export async function fetchPatientBalance(p: Patient) {
   return data.data;
 }
 
-export function calcInvoiceItemGstAndAmount(med: MedicineItem, item: InvoiceItemFormData) {
+export function calcInvoiceItemGstAndAmount(
+  item: InvoiceItemFormData,
+  { sellRate, gstPer }: { sellRate: number; gstPer: number },
+) {
   const qty = Number(item.qty);
-  const sellRate = med.unit_mrp;
   const disc = Number(item.disc);
-  const _gst = med.gst;
   const base = qty * sellRate;
 
   const discAmt = item.discType === "%" ? (base * disc) / 100 : disc;
   const taxable = Math.max(base - discAmt, 0);
-  const gst = (taxable * _gst) / 100;
+  const gst = (taxable * gstPer) / 100;
   const gstSplit = gst / 2;
   const amount = taxable + gst;
   return { cgst: gstSplit, sgst: gstSplit, amount };
 }
 
 export function mapMedicineItemToInvoiceItem(med: MedicineItem, item: InvoiceItemFormData) {
-  const amountAndGst = calcInvoiceItemGstAndAmount(med, item);
+  const amountAndGst = calcInvoiceItemGstAndAmount(item, {
+    sellRate: med.unit_mrp,
+    gstPer: med.gst,
+  });
   const packBreakdown = `${med.stock} pk x ${med.packing_size} = ${med.total_units} units`;
   return {
     ...item,
