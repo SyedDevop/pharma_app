@@ -24,6 +24,7 @@ import {
   type ExpiryTone,
   expiryDotClass,
   expiryTone,
+  formatExpiry,
   MedicineSearch,
 } from "../my-ui/medicineSearch";
 import { Kbd } from "../ui/kbd";
@@ -80,7 +81,9 @@ function ExpiryCell({ expiry }: { expiry: string }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-sm">
       <span className={cn("size-2 shrink-0 rounded-[1px]", expiryDotClass[tone])} />
-      <span className={cn("font-medium tabular-nums", EXPIRY_TEXT_CLASS[tone])}>{expiry}</span>
+      <span className={cn("font-medium tabular-nums", EXPIRY_TEXT_CLASS[tone])}>
+        {formatExpiry(expiry)}
+      </span>
     </span>
   );
 }
@@ -193,7 +196,7 @@ export default function InvoiceLineTable() {
                     {row.batch}
                   </div>
                 </TableCell>
-                <TableCell className="min-w-25">
+                <TableCell className="w-20">
                   <div className="rounded-sm border bg-primary/5 p-1 text-sm tabular-nums">
                     <ExpiryCell expiry={row.expiry} />
                   </div>

@@ -62,6 +62,14 @@ export function daysToExpiry(raw?: string | null): number | null {
   return Math.ceil((date.getTime() - Date.now()) / 86_400_000);
 }
 
+export function formatExpiry(raw?: string | null): string {
+  const date = parseExpiry(raw);
+  if (!date) return raw?.trim() ?? "";
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
+  return `${month}/${year}`;
+}
+
 export function expiryTone(raw?: string | null): ExpiryTone {
   const days = daysToExpiry(raw);
   if (days === null) return "unknown";
@@ -249,7 +257,7 @@ function MedicineRow({ medicine }: { medicine: MedicineItem }) {
         <div className="flex min-w-0 items-center gap-2">
           <span
             className={cn("inline-block size-2 shrink-0 rounded-[1px]", expiryDotClass[tone])}
-            title={tone === "expired" ? "Expired" : `Expires ${medicine.exp_date}`}
+            title={tone === "expired" ? "Expired" : `Expires ${formatExpiry(medicine.exp_date)}`}
           />
           <span className="truncate font-medium text-foreground">{medicine.name}</span>
           {medicine.schedule === "OTC" ? (
@@ -270,7 +278,7 @@ function MedicineRow({ medicine }: { medicine: MedicineItem }) {
         <span className="truncate text-muted-foreground text-xs">
           {[
             medicine.batch && `Batch ${medicine.batch}`,
-            medicine.exp_date && `Exp ${medicine.exp_date}`,
+            medicine.exp_date && `Exp ${formatExpiry(medicine.exp_date)}`,
             medicine.packing,
             medicine.rack && `Rack ${medicine.rack}`,
           ]
