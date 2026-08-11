@@ -238,56 +238,54 @@ function Index() {
 
         <Card>
           <CardContent>
-            <div>
-              <div className="mb-4 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
-                <CreditCardIcon className="size-6 text-primary" weight="light" />
-                <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
-                  Payment
-                </h2>
-              </div>
+            <div className="mb-4 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
+              <CreditCardIcon className="size-6 text-primary" weight="light" />
+              <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
+                Payment
+              </h2>
+            </div>
 
-              <div className="flex flex-col">
-                <div className="flex-1 space-y-2.5">
-                  <DumGroupe>
-                    <DumTitle>Cash (F1)</DumTitle>
-                    <Input
-                      type="number"
-                      placeholder="00.00"
-                      className="no-spinner text-right font-bold tabular-nums"
-                    />
-                  </DumGroupe>
-                  <DumGroupe>
-                    <DumTitle>Cash (F3)</DumTitle>
-                    <Input
-                      type="number"
-                      placeholder="00.00"
-                      className="no-spinner text-right font-bold tabular-nums"
-                    />
-                  </DumGroupe>
-                  <DumGroupe>
-                    <DumTitle>Cash (F4)</DumTitle>
-                    <Input
-                      type="number"
-                      placeholder="00.00"
-                      className="no-spinner text-right font-bold tabular-nums"
-                    />
-                  </DumGroupe>
-                  <Separator />
-                </div>
-                <div className="space-y-2.5">
-                  <DumGroupe>
-                    <DumTitle>Total Paid</DumTitle>
-                    <DumInput className="text-right font-bold text-primary/60 text-sm">
-                      {1600.0}
-                    </DumInput>
-                  </DumGroupe>
-                  <DumGroupe>
-                    <DumTitle>Balance / Change</DumTitle>
-                    <DumInput className="text-right font-bold text-primary/60 text-sm">
-                      {1600.0}
-                    </DumInput>
-                  </DumGroupe>
-                </div>
+            <div className="flex flex-col">
+              <div className="space-y-2.5">
+                <DumGroupe>
+                  <DumTitle>Cash (F1)</DumTitle>
+                  <Input
+                    type="number"
+                    placeholder="00.00"
+                    className="no-spinner text-right font-bold tabular-nums"
+                  />
+                </DumGroupe>
+                <DumGroupe>
+                  <DumTitle>Cash (F3)</DumTitle>
+                  <Input
+                    type="number"
+                    placeholder="00.00"
+                    className="no-spinner text-right font-bold tabular-nums"
+                  />
+                </DumGroupe>
+                <DumGroupe>
+                  <DumTitle>Cash (F4)</DumTitle>
+                  <Input
+                    type="number"
+                    placeholder="00.00"
+                    className="no-spinner text-right font-bold tabular-nums"
+                  />
+                </DumGroupe>
+              </div>
+              <div className="mt-21 space-y-2.5">
+                <Separator />
+                <DumGroupe>
+                  <DumTitle>Total Paid</DumTitle>
+                  <DumInput className="text-right font-bold text-primary/60 text-sm">
+                    {1600.0}
+                  </DumInput>
+                </DumGroupe>
+                <DumGroupe>
+                  <DumTitle>Balance / Change</DumTitle>
+                  <DumInput className="text-right font-bold text-primary/60 text-sm">
+                    {1600.0}
+                  </DumInput>
+                </DumGroupe>
               </div>
             </div>
           </CardContent>
