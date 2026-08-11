@@ -13,6 +13,7 @@
     "windows": [
       {
         "title": "Pharma",
+        "decorations": false,
         "center": true,
         "maximized": true,
         "width": 800,
