@@ -90,7 +90,7 @@
 	--sidebar-border: oklch(0.925 0.005 214.3);
 	--sidebar-ring: oklch(0.723 0.014 214.4);
 
-	--base-font-size: 90%;
+	--app-font-size: 100%;
 }
 
 .dark {
@@ -130,6 +130,19 @@
 	--sidebar-ring: oklch(0.56 0.021 213.5);
 }
 
+html[data-font-size="xs"] {
+	--app-font-size: 85%;
+}
+html[data-font-size="sm"] {
+	--app-font-size: 90%;
+}
+html[data-font-size="md"] {
+	--app-font-size: 100%;
+}
+html[data-font-size="lg"] {
+	--app-font-size: 110%;
+}
+
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
@@ -143,6 +156,6 @@
 	}
 	html {
 		@apply font-sans;
-		font-size: var(--base-font-size);
+		font-size: var(--app-font-size);
 	}
 }
