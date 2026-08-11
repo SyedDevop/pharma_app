@@ -1,4 +1,10 @@
-import { MoneyWavyIcon, PillIcon } from "@phosphor-icons/react";
+import {
+  CreditCardIcon,
+  InvoiceIcon,
+  KeyboardIcon,
+  MoneyWavyIcon,
+  PillIcon,
+} from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   CustomerType,
@@ -10,6 +16,7 @@ import {
 } from "@/components/invoice";
 import { PatientDetails } from "@/components/invoice/patientDetails";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useInvoiceStore } from "@/store/invoice_db";
@@ -86,26 +93,81 @@ function Index() {
         </CardContent>
       </Card>
 
-      <Card className="mt-4 gap-0 py-0">
-        <CardHeader className="flex justify-between bg-primary/5 py-2">
-          <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <MoneyWavyIcon className="size-4.5" />
-            </div>
+      <div className="mt-4 grid grid-cols-3 gap-4">
+        <Card>
+          <CardContent>
             <div>
-              <CardTitle className="font-semibold text-base text-foreground tracking-tight">
-                Billing Info
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Payment and totals for this invoice.
-              </CardDescription>
+              <div className="mb-4 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
+                <KeyboardIcon className="size-6 text-primary" weight="light" />
+                <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
+                  Keyboard Shortcuts
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <p>
+                  <Kbd className="text-xs">F1</Kbd> {"  "}Cash
+                </p>
+                <p>
+                  <Kbd className="text-xs">F2</Kbd> {"  "}Add Row
+                </p>
+                <p>
+                  <Kbd className="text-xs">F3</Kbd> {"  "}Upi
+                </p>
+                <p>
+                  <Kbd className="text-xs">F4</Kbd> {"  "}Card
+                </p>
+                <p>
+                  <KbdGroup>
+                    <Kbd className="text-xs">Ctrl + S</Kbd>
+                  </KbdGroup>
+                  {"  "}
+                  Save
+                </p>
+                <p>
+                  <KbdGroup>
+                    <Kbd className="text-xs">Ctrl + P</Kbd>
+                  </KbdGroup>
+                  {"  "}
+                  Print
+                </p>
+                <p>
+                  <KbdGroup>
+                    <Kbd className="text-xs">Ctrl + B</Kbd>
+                  </KbdGroup>
+                  {"  "}
+                  Balance
+                </p>
+              </div>
             </div>
-          </div>
-        </CardHeader>
+          </CardContent>
+        </Card>
 
-        <Separator />
-        <CardContent className="px-0 py-1"></CardContent>
-      </Card>
+        <Card>
+          <CardContent>
+            <div>
+              <div className="mb-4 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
+                <InvoiceIcon className="size-6 text-primary" weight="light" />
+                <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
+                  Totals
+                </h2>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent>
+            <div>
+              <div className="mb-4 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
+                <CreditCardIcon className="size-6 text-primary" weight="light" />
+                <h2 className="font-heading font-semibold text-foreground text-sm tracking-wide">
+                  Payment
+                </h2>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
