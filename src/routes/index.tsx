@@ -1,4 +1,4 @@
-import { PillIcon } from "@phosphor-icons/react";
+import { MoneyWavyIcon, PillIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   CustomerType,
@@ -26,11 +26,11 @@ function Index() {
               <PillIcon className="size-4.5" />
             </div>
             <div>
-              <CardTitle className="font-semibold text-base text-foreground">
+              <CardTitle className="font-semibold text-base text-foreground tracking-tight">
                 Invoice Info
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                All the information about the invoice and patient.
+                Invoice and patient details for this sale.
               </CardDescription>
             </div>
           </div>
@@ -59,9 +59,11 @@ function Index() {
               <PillIcon className="size-4.5" />
             </div>
             <div>
-              <CardTitle className="font-semibold text-base text-foreground">Sales Items</CardTitle>
+              <CardTitle className="font-semibold text-base text-foreground tracking-tight">
+                Sales Items
+              </CardTitle>
               <CardDescription className="text-muted-foreground">
-                This section contains all the sales items
+                Items and quantities on this invoice.
               </CardDescription>
             </div>
           </div>
@@ -82,6 +84,27 @@ function Index() {
         <CardContent className="px-0 py-1">
           <SalesItems />
         </CardContent>
+      </Card>
+
+      <Card className="mt-4 gap-0 py-0">
+        <CardHeader className="flex justify-between bg-primary/5 py-2">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <MoneyWavyIcon className="size-4.5" />
+            </div>
+            <div>
+              <CardTitle className="font-semibold text-base text-foreground tracking-tight">
+                Billing Info
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Payment and totals for this invoice.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+
+        <Separator />
+        <CardContent className="px-0 py-1"></CardContent>
       </Card>
     </div>
   );
