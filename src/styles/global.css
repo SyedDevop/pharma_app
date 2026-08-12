@@ -130,6 +130,9 @@
 	--sidebar-ring: oklch(0.56 0.021 213.5);
 }
 
+html[data-font-size="xxs"] {
+	--app-font-size: 80%;
+}
 html[data-font-size="xs"] {
 	--app-font-size: 85%;
 }

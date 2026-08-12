@@ -1,6 +1,7 @@
 import React from "react";
 
 export const FONT_SIZES = [
+  { value: "xxs", label: "Extra Small", hint: "80%" },
   { value: "xs", label: "Small", hint: "85%" },
   { value: "sm", label: "Compact", hint: "90%" },
   { value: "md", label: "Default", hint: "100%" },
