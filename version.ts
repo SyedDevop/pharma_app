@@ -146,11 +146,12 @@ Examples:
 Options:
   -h --help       Show this help message.
   -s --show       Show the current version.
+  -y --yes        Skip confirmation prompt and write to files.
   `);
   process.exit(1);
 }
 
-if (args.length < 1 || args.length > 2) {
+if (args.length < 1 || args.length > 3) {
   usage();
 }
 function isOption(opt: "help" | "show", input: string): boolean {
@@ -160,7 +161,9 @@ function isOption(opt: "help" | "show", input: string): boolean {
 const input = args[0];
 let explicitNumber = null;
 
-if (args.length === 2) {
+const xyzVersion = input.match(versionRegex);
+
+if (!xyzVersion && args.length === 2) {
   if (!sv_keys.has(input as keyof SemanticVersion)) {
     console.error(
       `A number argument is only valid with major, minor, or patch (got "${input} ${args[1]}").`,
@@ -187,7 +190,6 @@ else if (isOption("show", input)) {
 const allFiles = await getAllFileData();
 const versions = getVersionStr(allFiles);
 
-const xyzVersion = input.match(versionRegex);
 if (!sv_keys.has(input as keyof SemanticVersion) && xyzVersion === null) {
   console.log(
     `Invalid version string "${input}" — must be one of ${[...sv_keys].join(", ")} or x.y.z.`,
@@ -216,9 +218,14 @@ const terInput = rl.createInterface({
   output: process.stdout,
 });
 
-const update = (
-  await terInput.question(`\nDo you want to update the version? ([y]es/[n]o): `)
-).toLowerCase();
+let update: string;
+if (args.includes("-y") || args.includes("--yes")) {
+  update = "y";
+} else {
+  update = (
+    await terInput.question(`\nDo you want to update the version? ([y]es/[n]o): `)
+  ).toLowerCase();
+}
 
 if (update === "y" || update === "yes") {
   const newVersions: VersionMap = {};
