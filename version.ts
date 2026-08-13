@@ -239,5 +239,8 @@ if (update === "y" || update === "yes") {
   console.log("All files have been successfully written!");
   process.exit(0);
 }
+if (update !== "n" && update !== "no") {
+  console.error(`Invalid option "${update}" — must be one of [y]es, [n]o.`);
+}
 console.log("No updates applied.");
 process.exit(0);
