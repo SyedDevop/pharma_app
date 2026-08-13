@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import rl from "node:readline/promises";
@@ -48,29 +49,37 @@ const getVersionStr = (data: FileData[]) => {
 
 const updateFile = async (files: FileData[], newVersion: VersionMap) => {
   try {
-    const writer = files.map(({ name, path: fpath, content }) => {
+    const writers = files.map(({ name, path: fpath, content }) => {
       const newV = newVersion[name];
-      let newContent = content;
-      if (path.basename(name) === ".json") {
+      let newContent: string;
+      if (path.extname(name) === ".json") {
         const jsonContent = JSON.parse(content);
         jsonContent.version = newV.version;
-        newContent = JSON.stringify(jsonContent, null, 2);
+        newContent = `${JSON.stringify(jsonContent, null, 2)}\n`;
       } else {
+        let inPackageTable = true; // adjust default based on file format
         newContent = content
           .split("\n")
-          .map((line) => (line.startsWith("version") ? `version = "${newV.version}"` : line))
+          .map((line) => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith("[")) {
+              inPackageTable = trimmed === "[package]";
+              return line;
+            }
+            if (inPackageTable && trimmed.startsWith("version")) {
+              return `version = "${newV.version}"`;
+            }
+            return line;
+          })
           .join("\n");
       }
-      return fs.writeFile(fpath, newContent, "utf8", (err) => {
-        if (err) throw err;
-      });
+      return writeFile(fpath, newContent, "utf8");
     });
 
-    await Promise.all(writer);
-    console.log("All files have been successfully written!");
+    await Promise.all(writers);
   } catch (error) {
-    // Handle error if ANY file fails to write
     console.error("Error writing files:", error);
+    throw error; // don't swallow — caller thinks it succeeded otherwise
   }
 };
 
@@ -204,6 +213,7 @@ if (update === "y" || update === "yes") {
     newVersions[name] = { name, version: semanticToStrVersion(newVersion) };
   }
   await updateFile(allFiles, newVersions);
+  console.log("All files have been successfully written!");
   process.exit(0);
 }
 
