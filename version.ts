@@ -98,6 +98,14 @@ const strToSemanticVersion = (strVersion: string): SemanticVersion => {
 const semanticToStrVersion = (version: SemanticVersion) =>
   `${version.major}.${version.minor}.${version.patch}`;
 
+const regexToSemanticVersion = (regex: RegExpMatchArray): SemanticVersion => {
+  return {
+    major: Number(regex.groups?.major),
+    minor: Number(regex.groups?.minor),
+    patch: Number(regex.groups?.patch),
+  };
+};
+
 const bumpVersion = (
   version: SemanticVersion,
   type: keyof SemanticVersion,
@@ -179,16 +187,26 @@ else if (isOption("show", input)) {
 const allFiles = await getAllFileData();
 const versions = getVersionStr(allFiles);
 
-if (!sv_keys.has(input as keyof SemanticVersion)) {
-  process.exit(1);
+const xyzVersion = input.match(versionRegex);
+if (!sv_keys.has(input as keyof SemanticVersion) && xyzVersion === null) {
+  console.log(
+    `Invalid version string "${input}" — must be one of ${[...sv_keys].join(", ")} or x.y.z.`,
+  );
+  console.log(`See this help message for more information:\n`);
+  usage();
 }
 
 for (const { name, version } of versions) {
-  const newVersion = bumpVersion(
-    strToSemanticVersion(version),
-    input as keyof SemanticVersion,
-    explicitNumber,
-  );
+  let newVersion: SemanticVersion;
+  if (xyzVersion) {
+    newVersion = regexToSemanticVersion(xyzVersion);
+  } else {
+    newVersion = bumpVersion(
+      strToSemanticVersion(version),
+      input as keyof SemanticVersion,
+      explicitNumber,
+    );
+  }
   const newStrVersion = semanticToStrVersion(newVersion);
   console.log(`${name}: ${version} -> ${newStrVersion}`);
 }
@@ -205,16 +223,21 @@ const update = (
 if (update === "y" || update === "yes") {
   const newVersions: VersionMap = {};
   for (const { name, version } of versions) {
-    const newVersion = bumpVersion(
-      strToSemanticVersion(version),
-      input as keyof SemanticVersion,
-      explicitNumber,
-    );
+    let newVersion: SemanticVersion;
+    if (xyzVersion) {
+      newVersion = regexToSemanticVersion(xyzVersion);
+    } else {
+      newVersion = bumpVersion(
+        strToSemanticVersion(version),
+        input as keyof SemanticVersion,
+        explicitNumber,
+      );
+    }
     newVersions[name] = { name, version: semanticToStrVersion(newVersion) };
   }
   await updateFile(allFiles, newVersions);
   console.log("All files have been successfully written!");
   process.exit(0);
 }
-
 console.log("No updates applied.");
+process.exit(0);
