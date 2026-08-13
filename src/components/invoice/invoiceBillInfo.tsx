@@ -1,4 +1,5 @@
 import { CreditCardIcon, InvoiceIcon, KeyboardIcon } from "@phosphor-icons/react";
+import { useInvoiceStore } from "@/store/invoice_db";
 import { DumGroupe, DumInput, DumTitle } from "../my-ui/dumInput";
 import { Card, CardContent } from "../ui/card";
 import { Field, FieldLabel } from "../ui/field";
@@ -85,6 +86,7 @@ function KeyShortcuts() {
 }
 
 function Totals() {
+  const totals = useInvoiceStore((s) => s.totals);
   return (
     <Card>
       <CardContent>
@@ -98,15 +100,15 @@ function Totals() {
           <div className="space-y-2.5">
             <DumGroupe>
               <DumTitle>Sub Total (Taxable)</DumTitle>
-              <DumInput className="text-right font-bold text-primary/60 text-sm">{1600.0}</DumInput>
+              <DumInput className="text-right font-bold text-primary/60 text-sm">
+                {totals.subTotal}
+              </DumInput>
             </DumGroupe>
             <DumGroupe>
               <DumTitle>Gst Total </DumTitle>
-              <DumInput className="text-right font-bold text-primary/60 text-sm">{1600.0}</DumInput>
-            </DumGroupe>
-            <DumGroupe>
-              <DumTitle>Gst Amount</DumTitle>
-              <DumInput className="text-right font-bold text-primary/60 text-sm">{1600.0}</DumInput>
+              <DumInput className="text-right font-bold text-primary/60 text-sm">
+                {totals.gstTotal}
+              </DumInput>
             </DumGroupe>
 
             <DumGroupe>
@@ -140,7 +142,9 @@ function Totals() {
             <Separator />
             <DumGroupe>
               <DumTitle>Net Payable</DumTitle>
-              <DumInput className="text-right font-bold text-primary/60 text-sm">{1600.0}</DumInput>
+              <DumInput className="text-right font-bold text-primary/60 text-sm">
+                {totals.netPayable}
+              </DumInput>
             </DumGroupe>
           </div>
         </div>

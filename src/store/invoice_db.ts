@@ -1,10 +1,15 @@
 import { create } from "zustand";
-import { EMPTY_CUSTOMER_FORMS, EMPTY_PATIENT, emptyInvoiceItem } from "./invoice/const_data.ts";
 import {
-  calcInvoiceItemGstAndAmount,
+  EMPTY_CUSTOMER_FORMS,
+  EMPTY_INVOICE_ADJUSTMENT,
+  EMPTY_INVOICE_TOTAL,
+  EMPTY_PATIENT,
+  emptyInvoiceItem,
+} from "./invoice/const_data.ts";
+import {
   fetchPatientBalance,
   mapMedicineItemToInvoiceItem,
-  RE_CALC_FOR,
+  updateInvoiceItem,
 } from "./invoice/helper";
 
 type State = {
@@ -15,6 +20,8 @@ type State = {
   customerTypeForm: CustomerTypeFormData;
   invoiceItems: InvoiceItemFormData[];
   maxDiscount: number;
+  totals: InvoiceTotal;
+  adjustment: InvoiceAdjustment;
 };
 
 type Actions = {
@@ -105,32 +112,25 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   },
   updateInvoiceItemsField: (index, k, v) => {
     set((s) => {
-      const prev = s.invoiceItems[index];
-      if (!prev || prev[k] === v) return s;
-      const draft = { ...prev, [k]: v };
-      const _discNum = Number(draft.disc);
-      const _saleNum = Number(draft.sellRate);
-      draft.sellRate = Math.min(_saleNum, Number(draft.mrp)).toString();
-      draft.qty = Math.min(Number(draft.qty), Number(draft.storeStock)).toString();
-      if (k === "discType" || k === "disc") {
+      const invoiceItems = updateInvoiceItem(s.invoiceItems, index, k, v, s.maxDiscount);
+      let totals = s.totals;
+      if (k !== "item") {
+        totals = invoiceItems.reduce((acc, inv) => {
+          return {
+            subTotal: acc.subTotal + inv.taxableAmount,
+            gstTotal: acc.gstTotal + inv.gstAmount,
+            netPayable: 0,
+          };
+        }, EMPTY_INVOICE_TOTAL);
+
+        const discNum = Number(s.adjustment.disc);
         const disAmount =
-          draft.discType === "%"
-            ? Math.min(_discNum, s.maxDiscount)
-            : Math.min(_discNum, Math.round(_saleNum * s.maxDiscount) / 100);
-        draft.disc = disAmount.toString();
+          s.adjustment.discType === "%"
+            ? Math.min(discNum, s.maxDiscount)
+            : Math.min(discNum, Math.round((totals.subTotal * s.maxDiscount) / 100));
+        totals.netPayable = totals.subTotal - disAmount;
       }
-      if (RE_CALC_FOR.has(k)) {
-        const amounts = calcInvoiceItemGstAndAmount(draft, {
-          sellRate: Number(draft.sellRate),
-          gstPer: Number(draft.gstPct),
-        });
-        draft.cgst = amounts.cgst.toFixed(2);
-        draft.sgst = amounts.sgst.toFixed(2);
-        draft.amount = amounts.amount.toFixed(2);
-      }
-      const invoiceItems = s.invoiceItems.slice();
-      invoiceItems[index] = draft;
-      return { invoiceItems };
+      return { invoiceItems, totals };
     });
   },
   updateInvoiceItems: (index, patch) => {
@@ -138,4 +138,7 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       invoiceItems: s.invoiceItems.map((i, idx) => (idx === index ? { ...i, ...patch } : i)),
     }));
   },
+
+  totals: EMPTY_INVOICE_TOTAL,
+  adjustment: EMPTY_INVOICE_ADJUSTMENT,
 }));

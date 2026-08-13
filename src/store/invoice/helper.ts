@@ -36,7 +36,7 @@ export function calcInvoiceItemGstAndAmount(
   const gst = (taxable * gstPer) / 100;
   const gstSplit = gst / 2;
   const amount = taxable + gst;
-  return { cgst: gstSplit, sgst: gstSplit, amount };
+  return { cgst: gstSplit, sgst: gstSplit, gst, amount, taxable };
 }
 
 export function mapMedicineItemToInvoiceItem(med: MedicineItem, item: InvoiceItemFormData) {
@@ -58,8 +58,53 @@ export function mapMedicineItemToInvoiceItem(med: MedicineItem, item: InvoiceIte
     mrp: med.mrp.toString(),
     sellRate: med.unit_mrp.toString(),
     gstPct: med.gst.toString(),
+    gstAmount: amountAndGst.gst,
     cgst: amountAndGst.cgst.toFixed(2),
     sgst: amountAndGst.sgst.toFixed(2),
     amount: amountAndGst.amount.toFixed(2),
   } satisfies InvoiceItemFormData;
 }
+
+export const updateInvoiceItem = (
+  invoiceItems: InvoiceItemFormData[],
+  index: number,
+  key: keyof InvoiceItemFormData,
+  value: InvoiceItemFormData[keyof InvoiceItemFormData],
+  maxDiscount: number,
+) => {
+  const prev = invoiceItems[index];
+  if (!prev || prev[key] === value) return invoiceItems;
+
+  const draft = { ...prev, [key]: value };
+
+  const discNum = Number(draft.disc);
+  const saleNum = Number(draft.sellRate);
+
+  draft.sellRate = Math.min(saleNum, Number(draft.mrp)).toString();
+  draft.qty = Math.min(Number(draft.qty), Number(draft.storeStock)).toString();
+
+  if (key === "discType" || key === "disc") {
+    const disAmount =
+      draft.discType === "%"
+        ? Math.min(discNum, maxDiscount)
+        : Math.min(discNum, Math.round((saleNum * maxDiscount) / 100));
+
+    draft.disc = disAmount.toString();
+  }
+
+  if (RE_CALC_FOR.has(key)) {
+    const amounts = calcInvoiceItemGstAndAmount(draft, {
+      sellRate: Number(draft.sellRate),
+      gstPer: Number(draft.gstPct),
+    });
+    draft.gstAmount = amounts.gst;
+    draft.cgst = amounts.cgst.toFixed(2);
+    draft.sgst = amounts.sgst.toFixed(2);
+    draft.amount = amounts.amount.toFixed(2);
+    draft.taxableAmount = amounts.taxable;
+  }
+
+  const next = invoiceItems.slice();
+  next[index] = draft;
+  return next;
+};

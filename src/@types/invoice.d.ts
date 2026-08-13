@@ -1,4 +1,5 @@
 type ItemDiscountType = "%" | "₹";
+
 type InvoiceItemFormData = {
   id: string;
   item: string;
@@ -15,9 +16,21 @@ type InvoiceItemFormData = {
   discType: ItemDiscountType;
   disc: string;
   gstPct: string;
+  gstAmount: number;
   cgst: string;
   sgst: string;
+  taxableAmount: number;
   amount: string;
+};
+type InvoiceAdjustment = {
+  discType: ItemDiscountType;
+  disc: string;
+  roundOff: string;
+};
+type InvoiceTotal = {
+  subTotal: number;
+  gstTotal: number;
+  netPayable: number;
 };
 
 type ScheduleType = "H" | "H1" | "X" | "OTC" | "" | null;

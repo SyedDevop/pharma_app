@@ -9,6 +9,19 @@ export const EMPTY_PATIENT: Patient = {
   address: "",
 } as const;
 
+export const EMPTY_INVOICE_TOTAL: InvoiceTotal = {
+  subTotal: 0,
+  gstTotal: 0,
+  //totalAmount: 0,
+  netPayable: 0,
+} as const;
+
+export const EMPTY_INVOICE_ADJUSTMENT: InvoiceAdjustment = {
+  discType: "%",
+  disc: "",
+  roundOff: "",
+} as const;
+
 export const EMPTY_CUSTOMER_FORMS: CustomerTypeFormData = {
   retail: {
     previous_due: "",
@@ -53,4 +66,6 @@ export const emptyInvoiceItem = (): InvoiceItemFormData =>
     cgst: "0",
     sgst: "0",
     amount: "0",
+    gstAmount: 0,
+    taxableAmount: 0,
   }) as const;
