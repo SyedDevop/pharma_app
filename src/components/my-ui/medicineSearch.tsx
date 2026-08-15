@@ -290,6 +290,7 @@ function MedicineRow({ medicine }: { medicine: MedicineItem }) {
 
       <div className="flex shrink-0 flex-col items-end gap-0.5 text-xs tabular-nums">
         <span className="font-medium text-foreground">₹{medicine.mrp}</span>
+        <span className="text-foreground">Gst: {medicine.gst}</span>
         <span className="text-muted-foreground">
           {medicine.stock} batch / {medicine.store_stock} store
         </span>

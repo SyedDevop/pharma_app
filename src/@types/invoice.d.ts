@@ -57,6 +57,12 @@ type MedicineItem = {
   is_narcotic: number;
 };
 
+type DiscountDistribution = {
+  gstPercent: number;
+  amount: number;
+  distributionPercent: number;
+};
+
 //{
 //id -- "id": 65647,
 //item -- "name": "AMLOKIND AT TAB",
