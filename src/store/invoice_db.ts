@@ -114,12 +114,15 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
     set((s) => {
       const invoiceItems = updateInvoiceItem(s.invoiceItems, index, k, v, s.maxDiscount);
       let totals = s.totals;
+
       if (k !== "item") {
         const discDis: Map<number, DiscountDistribution> = new Map();
+        let taxableAmount = 0;
         for (let i = 0; i < invoiceItems.length; i++) {
           const inv = invoiceItems[i];
           const gst = Number(inv.gstPct);
           const dis = discDis.get(gst);
+          taxableAmount += inv.taxableAmount;
           if (dis) {
             dis.amount += inv.taxableAmount;
             discDis.set(gst, dis);
@@ -131,6 +134,10 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
             });
           }
         }
+        console.log(discDis);
+        discDis.forEach((dis) => {
+          dis.distributionPercent = (dis.amount / taxableAmount) * 100;
+        });
         console.log(discDis);
 
         totals = invoiceItems.reduce((acc, inv) => {

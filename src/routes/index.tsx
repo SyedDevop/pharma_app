@@ -1,10 +1,4 @@
-import {
-  CreditCardIcon,
-  InvoiceIcon,
-  KeyboardIcon,
-  MoneyWavyIcon,
-  PillIcon,
-} from "@phosphor-icons/react";
+import { PillIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   CustomerType,
@@ -16,20 +10,8 @@ import {
   SalesItems,
 } from "@/components/invoice";
 import { PatientDetails } from "@/components/invoice/patientDetails";
-import { DumGroupe, DumInput, DumTitle } from "@/components/my-ui/dumInput";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Kbd, KbdGroup } from "@/components/ui/kbd";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useInvoiceStore } from "@/store/invoice_db";
 
