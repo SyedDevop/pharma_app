@@ -1,4 +1,5 @@
 import { fetchApi } from "@/lib/api";
+import { EMPTY_INVOICE_TOTAL } from "./const_data";
 
 export async function fetchPatientBalance(p: Patient) {
   var visit_id: string = "";
@@ -108,3 +109,11 @@ export const updateInvoiceItem = (
   next[index] = draft;
   return next;
 };
+
+export const updateInvoiceTotals = (items: InvoiceItemFormData[]) =>
+  items.reduce((acc, inv) => {
+    const subTotal = acc.subTotal + inv.taxableAmount;
+    const gstTotal = acc.gstTotal + inv.gstAmount;
+    const netPayable = acc.netPayable + subTotal + gstTotal;
+    return { subTotal, gstTotal, netPayable };
+  }, EMPTY_INVOICE_TOTAL);

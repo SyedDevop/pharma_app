@@ -10,6 +10,7 @@ import {
   fetchPatientBalance,
   mapMedicineItemToInvoiceItem,
   updateInvoiceItem,
+  updateInvoiceTotals,
 } from "./invoice/helper";
 
 type State = {
@@ -114,47 +115,7 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
     set((s) => {
       const invoiceItems = updateInvoiceItem(s.invoiceItems, index, k, v, s.maxDiscount);
       let totals = s.totals;
-
-      if (k !== "item") {
-        const discDis: Map<number, DiscountDistribution> = new Map();
-        let taxableAmount = 0;
-        for (let i = 0; i < invoiceItems.length; i++) {
-          const inv = invoiceItems[i];
-          const gst = Number(inv.gstPct);
-          const dis = discDis.get(gst);
-          taxableAmount += inv.taxableAmount;
-          if (dis) {
-            dis.amount += inv.taxableAmount;
-            discDis.set(gst, dis);
-          } else {
-            discDis.set(gst, {
-              amount: inv.taxableAmount,
-              gstPercent: gst,
-              distributionPercent: 0,
-            });
-          }
-        }
-        console.log(discDis);
-        discDis.forEach((dis) => {
-          dis.distributionPercent = (dis.amount / taxableAmount) * 100;
-        });
-        console.log(discDis);
-
-        totals = invoiceItems.reduce((acc, inv) => {
-          return {
-            subTotal: acc.subTotal + inv.taxableAmount,
-            gstTotal: acc.gstTotal + inv.gstAmount,
-            netPayable: 0,
-          };
-        }, EMPTY_INVOICE_TOTAL);
-
-        const discNum = Number(s.adjustment.disc);
-        const disAmount =
-          s.adjustment.discType === "%"
-            ? Math.min(discNum, s.maxDiscount)
-            : Math.min(discNum, Math.round((totals.subTotal * s.maxDiscount) / 100));
-        totals.netPayable = totals.subTotal - disAmount;
-      }
+      if (k !== "item") totals = updateInvoiceTotals(invoiceItems);
       return { invoiceItems, totals };
     });
   },
