@@ -13,6 +13,7 @@ pub fn run() {
     let builder = builder.plugin(tauri_plugin_devtools::init());
 
     builder
+        .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
         .run(tauri::generate_context!())
