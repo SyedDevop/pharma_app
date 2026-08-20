@@ -1,10 +1,18 @@
-import { CreditCardIcon, InvoiceIcon, KeyboardIcon } from "@phosphor-icons/react";
+import { CreditCardIcon, InvoiceIcon, KeyboardIcon, XIcon } from "@phosphor-icons/react";
 import { rupeesFmt } from "@/lib/my-utils";
 import { useInvoiceStore } from "@/store/invoice_db";
 import { DumGroupe, DumInput, DumTitle } from "../my-ui/dumInput";
+import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Field, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+} from "../ui/input-group";
 import { Kbd, KbdGroup } from "../ui/kbd";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Separator } from "../ui/separator";
@@ -171,33 +179,69 @@ function Payment() {
           <div className="space-y-2.5">
             <DumGroupe>
               <DumTitle>Cash (F1)</DumTitle>
-              <Input
-                type="number"
-                placeholder="00.00"
-                className="no-spinner text-right font-bold tabular-nums"
-                value={payment.cash}
-                onChange={(e) => updatePayment("cash", e.target.value)}
-              />
+              <div className="flex flex-row gap-1.5">
+                <Button
+                  size="icon-sm"
+                  variant="destructive"
+                  onClick={() => {
+                    updatePayment("cash", "");
+                  }}
+                >
+                  <XIcon />
+                </Button>
+                <Input
+                  type="number"
+                  placeholder="00.00"
+                  className="no-spinner text-right font-bold tabular-nums"
+                  value={payment.cash}
+                  onChange={(e) => updatePayment("cash", e.target.value)}
+                />
+                <Button>Fill</Button>
+              </div>
             </DumGroupe>
             <DumGroupe>
               <DumTitle>Card (F3)</DumTitle>
-              <Input
-                type="number"
-                placeholder="00.00"
-                className="no-spinner text-right font-bold tabular-nums"
-                value={payment.card}
-                onChange={(e) => updatePayment("card", e.target.value)}
-              />
+              <div className="flex flex-row gap-1.5">
+                <Button
+                  size="icon-sm"
+                  variant="destructive"
+                  onClick={() => {
+                    updatePayment("card", "");
+                  }}
+                >
+                  <XIcon />
+                </Button>
+                <Input
+                  type="number"
+                  placeholder="00.00"
+                  className="no-spinner text-right font-bold tabular-nums"
+                  value={payment.card}
+                  onChange={(e) => updatePayment("card", e.target.value)}
+                />
+                <Button>Fill</Button>
+              </div>
             </DumGroupe>
             <DumGroupe>
               <DumTitle>Upi (F4)</DumTitle>
-              <Input
-                type="number"
-                placeholder="00.00"
-                className="no-spinner text-right font-bold tabular-nums"
-                value={payment.upi}
-                onChange={(e) => updatePayment("upi", e.target.value)}
-              />
+              <div className="flex flex-row gap-1.5">
+                <Button
+                  size="icon-sm"
+                  variant="destructive"
+                  onClick={() => {
+                    updatePayment("upi", "");
+                  }}
+                >
+                  <XIcon />
+                </Button>
+                <Input
+                  type="number"
+                  placeholder="00.00"
+                  className="no-spinner text-right font-bold tabular-nums"
+                  value={payment.upi}
+                  onChange={(e) => updatePayment("upi", e.target.value)}
+                />
+                <Button>Fill</Button>
+              </div>
             </DumGroupe>
           </div>
           <div className="mt-21 space-y-2.5">
