@@ -117,3 +117,9 @@ export const updateInvoiceTotals = (items: InvoiceItemFormData[]) =>
     const netPayable = acc.netPayable + subTotal + gstTotal;
     return { subTotal, gstTotal, netPayable };
   }, EMPTY_INVOICE_TOTAL);
+
+export const calculateInvoicePayment = (netPayable: number, payment: InvoicePayment) => {
+  const totalPaid = Number(payment.cash) + Number(payment.card) + Number(payment.upi);
+  const balance = totalPaid - netPayable;
+  return { ...payment, totalPaid, balance };
+};

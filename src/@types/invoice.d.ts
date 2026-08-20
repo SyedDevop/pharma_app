@@ -27,12 +27,21 @@ type InvoiceAdjustment = {
   disc: string;
   roundOff: string;
 };
+
 type InvoiceTotal = {
   subTotal: number;
   gstTotal: number;
   netPayable: number;
 };
 
+type InvoicePayment = {
+  upi: string;
+  card: string;
+  cash: string;
+
+  totalPaid: number;
+  balance: number;
+};
 type ScheduleType = "H" | "H1" | "X" | "OTC" | "" | null;
 type MedicineItem = {
   id: string;

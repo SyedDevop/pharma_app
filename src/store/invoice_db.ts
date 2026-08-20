@@ -2,11 +2,13 @@ import { create } from "zustand";
 import {
   EMPTY_CUSTOMER_FORMS,
   EMPTY_INVOICE_ADJUSTMENT,
+  EMPTY_INVOICE_PAYMENT,
   EMPTY_INVOICE_TOTAL,
   EMPTY_PATIENT,
   emptyInvoiceItem,
 } from "./invoice/const_data.ts";
 import {
+  calculateInvoicePayment,
   fetchPatientBalance,
   mapMedicineItemToInvoiceItem,
   updateInvoiceItem,
@@ -23,6 +25,7 @@ type State = {
   maxDiscount: number;
   totals: InvoiceTotal;
   adjustment: InvoiceAdjustment;
+  payment: InvoicePayment;
 };
 
 type Actions = {
@@ -57,6 +60,10 @@ type Actions = {
     value: InvoiceItemFormData[K],
   ) => void;
   updateInvoiceItems: (index: number, patch: Partial<InvoiceItemFormData>) => void;
+  updateInvoicePaymentField: <K extends keyof Omit<InvoicePayment, "totalPaid" | "balance">>(
+    key: K,
+    value: InvoicePayment[K],
+  ) => void;
 };
 
 export const useInvoiceStore = create<State & Actions>((set) => ({
@@ -69,7 +76,6 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   updatePatientField: (k, v) => set((s) => ({ patient: { ...s.patient, [k]: v } })),
   updatePatient: (pa) => set((s) => ({ patient: { ...s.patient, ...pa } })),
   resetPatient: () => set({ patient: EMPTY_PATIENT }),
-
   patientBalance: undefined,
   fetchPatientBalance: async (p: Patient) => {
     set({ patientBalance: await fetchPatientBalance(p) });
@@ -115,8 +121,12 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
     set((s) => {
       const invoiceItems = updateInvoiceItem(s.invoiceItems, index, k, v, s.maxDiscount);
       let totals = s.totals;
-      if (k !== "item") totals = updateInvoiceTotals(invoiceItems);
-      return { invoiceItems, totals };
+      let payment = s.payment;
+      if (k !== "item") {
+        totals = updateInvoiceTotals(invoiceItems);
+        payment = calculateInvoicePayment(totals.netPayable, payment);
+      }
+      return { invoiceItems, totals, payment };
     });
   },
   updateInvoiceItems: (index, patch) => {
@@ -127,4 +137,13 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
 
   totals: EMPTY_INVOICE_TOTAL,
   adjustment: EMPTY_INVOICE_ADJUSTMENT,
+  payment: EMPTY_INVOICE_PAYMENT,
+
+  updateInvoicePaymentField: (k, v) => {
+    set((s) => {
+      let payment = { ...s.payment, [k]: v };
+      payment = calculateInvoicePayment(s.totals.netPayable, payment);
+      return { payment };
+    });
+  },
 }));

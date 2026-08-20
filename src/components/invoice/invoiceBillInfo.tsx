@@ -1,4 +1,5 @@
 import { CreditCardIcon, InvoiceIcon, KeyboardIcon } from "@phosphor-icons/react";
+import { rupeesFmt } from "@/lib/my-utils";
 import { useInvoiceStore } from "@/store/invoice_db";
 import { DumGroupe, DumInput, DumTitle } from "../my-ui/dumInput";
 import { Card, CardContent } from "../ui/card";
@@ -101,13 +102,13 @@ function Totals() {
             <DumGroupe>
               <DumTitle>Sub Total (Taxable)</DumTitle>
               <DumInput className="text-right font-bold text-primary/60 text-sm">
-                {totals.subTotal}
+                {rupeesFmt(totals.subTotal)}
               </DumInput>
             </DumGroupe>
             <DumGroupe>
               <DumTitle>Gst Total </DumTitle>
               <DumInput className="text-right font-bold text-primary/60 text-sm">
-                {totals.gstTotal}
+                {rupeesFmt(totals.gstTotal)}
               </DumInput>
             </DumGroupe>
 
@@ -143,7 +144,7 @@ function Totals() {
             <DumGroupe>
               <DumTitle>Net Payable</DumTitle>
               <DumInput className="text-right font-bold text-primary/60 text-sm">
-                {totals.netPayable}
+                {rupeesFmt(totals.netPayable)}
               </DumInput>
             </DumGroupe>
           </div>
@@ -154,6 +155,8 @@ function Totals() {
 }
 
 function Payment() {
+  const payment = useInvoiceStore((s) => s.payment);
+  const updatePayment = useInvoiceStore((s) => s.updateInvoicePaymentField);
   return (
     <Card>
       <CardContent>
@@ -172,6 +175,8 @@ function Payment() {
                 type="number"
                 placeholder="00.00"
                 className="no-spinner text-right font-bold tabular-nums"
+                value={payment.cash}
+                onChange={(e) => updatePayment("cash", e.target.value)}
               />
             </DumGroupe>
             <DumGroupe>
@@ -180,6 +185,8 @@ function Payment() {
                 type="number"
                 placeholder="00.00"
                 className="no-spinner text-right font-bold tabular-nums"
+                value={payment.card}
+                onChange={(e) => updatePayment("card", e.target.value)}
               />
             </DumGroupe>
             <DumGroupe>
@@ -188,6 +195,8 @@ function Payment() {
                 type="number"
                 placeholder="00.00"
                 className="no-spinner text-right font-bold tabular-nums"
+                value={payment.upi}
+                onChange={(e) => updatePayment("upi", e.target.value)}
               />
             </DumGroupe>
           </div>
@@ -195,11 +204,15 @@ function Payment() {
             <Separator />
             <DumGroupe>
               <DumTitle>Total Paid</DumTitle>
-              <DumInput className="text-right font-bold text-primary/60 text-sm">{1600.0}</DumInput>
+              <DumInput className="text-right font-bold text-primary/60 text-sm">
+                {rupeesFmt(payment.totalPaid)}
+              </DumInput>
             </DumGroupe>
             <DumGroupe>
               <DumTitle>Balance / Change</DumTitle>
-              <DumInput className="text-right font-bold text-primary/60 text-sm">{1600.0}</DumInput>
+              <DumInput className="text-right font-bold text-primary/60 text-sm">
+                {rupeesFmt(payment.balance)}
+              </DumInput>
             </DumGroupe>
           </div>
         </div>

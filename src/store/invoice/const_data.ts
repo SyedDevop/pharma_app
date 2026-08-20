@@ -16,6 +16,14 @@ export const EMPTY_INVOICE_TOTAL: InvoiceTotal = {
   netPayable: 0,
 } as const;
 
+export const EMPTY_INVOICE_PAYMENT: InvoicePayment = {
+  upi: "",
+  card: "",
+  cash: "",
+  totalPaid: 0,
+  balance: 0,
+} as const;
+
 export const EMPTY_INVOICE_ADJUSTMENT: InvoiceAdjustment = {
   discType: "%",
   disc: "",
