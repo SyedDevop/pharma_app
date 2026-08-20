@@ -14,8 +14,9 @@ export type EndpointUrl = keyof ApiEndpoints;
 export const fetchApi = async <T, U extends EndpointUrl = EndpointUrl>(
   url: U,
   query: ApiEndpoints[U],
+  baseUrl: string = BASE_URL,
 ): Promise<ApiResponse<T>> => {
-  const fetchUrl = new URL(`${BASE_URL}/api/${url}`);
+  const fetchUrl = new URL(`${baseUrl}/api/${url}`);
   if (query) {
     for (const [key, value] of Object.entries(query)) {
       if (value === undefined || value === "") continue;
