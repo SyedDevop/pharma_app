@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "tauri": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@hypothesi/tauri-mcp-server"
+      ],
+      "env": {}
+    },
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
+    }
+  }
+}

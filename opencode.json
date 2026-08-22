@@ -5,6 +5,15 @@
       "type": "local",
       "enabled": true,
       "command": ["bunx", "-y", "@hypothesi/tauri-mcp-server"]
+    },
+    "codegraph": {
+      "type": "local",
+      "command": [
+        "codegraph",
+        "serve",
+        "--mcp"
+      ],
+      "enabled": true
     }
   }
 }
