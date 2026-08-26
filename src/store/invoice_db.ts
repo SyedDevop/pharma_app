@@ -11,6 +11,7 @@ import {
   calculateInvoicePayment,
   fetchPatientBalance,
   mapMedicineItemToInvoiceItem,
+  updateGstSlab,
   updateInvoiceItem,
   updateInvoiceTotals,
 } from "./invoice/helper";
@@ -26,6 +27,7 @@ type State = {
   totals: InvoiceTotal;
   payment: InvoicePayment;
   adjustment: InvoiceAdjustment;
+  gstSlab: Map<string, InvoiceGstSlab>;
 };
 
 type Actions = {
@@ -122,11 +124,24 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
     }));
   },
   deleteInvoiceItems: (id: string) => {
-    set((s) => ({ invoiceItems: s.invoiceItems.filter((i) => i.id !== id) }));
+    set((s) => {
+      const invoiceItems = s.invoiceItems.filter((i) => i.id !== id);
+      let payment = s.payment;
+      let adjustment = s.adjustment;
+      const gstSlab = updateGstSlab(invoiceItems);
+      const totals = updateInvoiceTotals(invoiceItems);
+      payment = calculateInvoicePayment(totals.netPayable, payment);
+      if (invoiceItems.length === 0) {
+        invoiceItems.push(emptyInvoiceItem());
+        adjustment = EMPTY_INVOICE_ADJUSTMENT;
+      }
+      return { invoiceItems, totals, payment, gstSlab, adjustment };
+    });
   },
   updateInvoiceItemsField: (index, key, value) => {
     set((s) => {
       const adjustment = { ...s.adjustment };
+      let gstSlab = s.gstSlab;
       const invoiceItems = updateInvoiceItem(
         s.invoiceItems,
         index,
@@ -144,11 +159,12 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
         const roundOff = Math.round(totals.netPayable) - totals.netPayable;
         adjustment.roundOff = roundOff.toFixed(2);
         totals.roundedNetPayable += roundOff;
+        gstSlab = updateGstSlab(invoiceItems);
       }
       adjustment.disableBulkDisc = isDiscountApplied
         ? "Bulk discount is disabled because an item discount is already applied."
         : undefined;
-      return { invoiceItems, totals, payment, adjustment };
+      return { invoiceItems, totals, payment, adjustment, gstSlab };
     });
   },
   updateInvoiceItems: (index, patch) => {
@@ -192,4 +208,5 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       return { adjustment, totals };
     });
   },
+  gstSlab: new Map(),
 }));

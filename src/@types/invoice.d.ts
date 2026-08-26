@@ -38,14 +38,22 @@ type InvoiceTotal = {
   roundedNetPayable: number;
 };
 
+type InvoiceGstSlab = {
+  gst: number;
+  cgst: number;
+  sgst: number;
+  taxable: number;
+  amount: number;
+};
+
 type InvoicePayment = {
   upi: string;
   card: string;
   cash: string;
-
   totalPaid: number;
   balance: number;
 };
+
 type ScheduleType = "H" | "H1" | "X" | "OTC" | "" | null;
 type MedicineItem = {
   id: string;

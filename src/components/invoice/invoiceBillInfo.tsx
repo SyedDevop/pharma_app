@@ -1,5 +1,13 @@
 import { CreditCardIcon, InvoiceIcon, KeyboardIcon, XIcon } from "@phosphor-icons/react";
 import { Field, FieldError, FieldLabel, FieldTitle } from "@/components/ui/field";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { rupeesFmt } from "@/lib/my-utils";
 import { useInvoiceStore } from "@/store/invoice_db";
 import { DumGroupe, DumInput, DumTitle } from "../my-ui/dumInput";
@@ -75,15 +83,52 @@ function KeyShortcuts() {
             </Field>
             <Separator />
             <div>
-              <h1 className="font-semibold text-lg text-primary">Gst Slab Break-up</h1>
-              <div className="grid min-h-25 place-content-center rounded-sm border bg-muted">
-                <p className="p-2 text-lg text-muted-foreground">No Items Yet</p>
-              </div>
+              <GstSlabBreakup />
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function GstSlabBreakup() {
+  const gstSlab = useInvoiceStore((s) => s.gstSlab);
+  return (
+    <div>
+      <h1 className="font-semibold text-lg text-primary">GST Slab Break-up</h1>
+
+      <div className="min-h-25 rounded-sm border bg-muted">
+        {gstSlab.size === 0 ? (
+          <div className="grid min-h-25 place-content-center">
+            <p className="p-2 text-lg text-muted-foreground">No Items Yet</p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>GST %</TableHead>
+                <TableHead className="text-right">Taxable</TableHead>
+                <TableHead className="text-right">CGST</TableHead>
+                <TableHead className="text-right">SGST</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from(gstSlab.values()).map(({ gst, cgst, sgst, taxable, amount }) => (
+                <TableRow key={gst}>
+                  <TableCell>{gst}%</TableCell>
+                  <TableCell className="text-right">{rupeesFmt(taxable)}</TableCell>
+                  <TableCell className="text-right">{rupeesFmt(cgst)}</TableCell>
+                  <TableCell className="text-right">{rupeesFmt(sgst)}</TableCell>
+                  <TableCell className="text-right font-medium">{rupeesFmt(amount)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+    </div>
   );
 }
 

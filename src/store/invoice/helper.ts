@@ -119,6 +119,32 @@ export const updateInvoiceTotals = (items: InvoiceItemFormData[]) =>
     return { subTotal, gstTotal, netPayable, roundedNetPayable: netPayable };
   }, EMPTY_INVOICE_TOTAL);
 
+export const updateGstSlab = (items: InvoiceItemFormData[]) => {
+  const gstSlab: Map<string, InvoiceGstSlab> = new Map();
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (gstSlab.has(item.gstPct)) {
+      const slab = gstSlab.get(item.gstPct);
+      if (!slab) continue;
+      gstSlab.set(item.gstPct, {
+        gst: slab.gst + Number(item.gstAmount),
+        cgst: slab.cgst + Number(item.cgst),
+        sgst: slab.sgst + Number(item.sgst),
+        taxable: slab.taxable + Number(item.taxableAmount),
+        amount: slab.amount + Number(item.amount),
+      } satisfies InvoiceGstSlab);
+    } else {
+      gstSlab.set(item.gstPct, {
+        gst: Number(item.gstPct),
+        cgst: Number(item.cgst),
+        sgst: Number(item.sgst),
+        taxable: Number(item.taxableAmount),
+        amount: Number(item.amount),
+      } satisfies InvoiceGstSlab);
+    }
+  }
+  return gstSlab;
+};
 export const calculateInvoicePayment = (netPayable: number, payment: InvoicePayment) => {
   const totalPaid = Number(payment.cash) + Number(payment.card) + Number(payment.upi);
   const balance = totalPaid - netPayable;
