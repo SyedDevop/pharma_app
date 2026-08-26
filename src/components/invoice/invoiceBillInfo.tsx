@@ -215,6 +215,7 @@ function Totals() {
 function Payment() {
   const payment = useInvoiceStore((s) => s.payment);
   const updatePayment = useInvoiceStore((s) => s.updateInvoicePaymentField);
+  const fillPayment = useInvoiceStore((s) => s.fillPayment);
   return (
     <Card>
       <CardContent>
@@ -246,7 +247,7 @@ function Payment() {
                   value={payment.cash}
                   onChange={(e) => updatePayment("cash", e.target.value)}
                 />
-                <Button>Fill</Button>
+                <Button onClick={() => fillPayment("cash")}>Fill</Button>
               </div>
             </DumGroupe>
             <DumGroupe>
@@ -268,7 +269,7 @@ function Payment() {
                   value={payment.card}
                   onChange={(e) => updatePayment("card", e.target.value)}
                 />
-                <Button>Fill</Button>
+                <Button onClick={() => fillPayment("card")}>Fill</Button>
               </div>
             </DumGroupe>
             <DumGroupe>
@@ -290,7 +291,7 @@ function Payment() {
                   value={payment.upi}
                   onChange={(e) => updatePayment("upi", e.target.value)}
                 />
-                <Button>Fill</Button>
+                <Button onClick={() => fillPayment("upi")}>Fill</Button>
               </div>
             </DumGroupe>
           </div>

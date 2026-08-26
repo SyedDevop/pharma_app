@@ -62,7 +62,7 @@ type Actions = {
     value: InvoiceItemFormData[K],
   ) => void;
   updateInvoiceItems: (index: number, patch: Partial<InvoiceItemFormData>) => void;
-  updateInvoicePaymentField: <K extends keyof Omit<InvoicePayment, "totalPaid" | "balance">>(
+  updateInvoicePaymentField: <K extends InvoicePaymentMode>(
     key: K,
     value: InvoicePayment[K],
   ) => void;
@@ -73,6 +73,8 @@ type Actions = {
     key: K,
     value: InvoiceAdjustment[K],
   ) => void;
+
+  fillPayment: (mode: InvoicePaymentMode) => void;
 };
 
 export const useInvoiceStore = create<State & Actions>((set) => ({
@@ -155,10 +157,10 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       let payment = s.payment;
       if (key !== "item") {
         totals = updateInvoiceTotals(invoiceItems);
-        payment = calculateInvoicePayment(totals.netPayable, payment);
         const roundOff = Math.round(totals.netPayable) - totals.netPayable;
         adjustment.roundOff = roundOff.toFixed(2);
         totals.roundedNetPayable += roundOff;
+        payment = calculateInvoicePayment(totals.roundedNetPayable, payment);
         gstSlab = updateGstSlab(invoiceItems);
       }
       adjustment.disableBulkDisc = isDiscountApplied
@@ -179,7 +181,21 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   updateInvoicePaymentField: (k, v) => {
     set((s) => {
       let payment = { ...s.payment, [k]: v };
-      payment = calculateInvoicePayment(s.totals.netPayable, payment);
+      payment = calculateInvoicePayment(s.totals.roundedNetPayable, payment);
+      return { payment };
+    });
+  },
+
+  fillPayment: (mode) => {
+    set((s) => {
+      let payment = s.payment;
+      const totalFill = Number(payment.upi) + Number(payment.card) + Number(payment.cash);
+      if (totalFill > s.totals.roundedNetPayable) return s;
+      payment = {
+        ...payment,
+        [mode]: payment.totalPaid - payment.balance - totalFill,
+      };
+      payment = calculateInvoicePayment(s.totals.roundedNetPayable, payment);
       return { payment };
     });
   },

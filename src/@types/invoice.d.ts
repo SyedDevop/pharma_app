@@ -53,6 +53,7 @@ type InvoicePayment = {
   totalPaid: number;
   balance: number;
 };
+type InvoicePaymentMode = keyof Omit<InvoicePayment, "totalPaid" | "balance">;
 
 type ScheduleType = "H" | "H1" | "X" | "OTC" | "" | null;
 type MedicineItem = {
