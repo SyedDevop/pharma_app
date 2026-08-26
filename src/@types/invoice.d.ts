@@ -22,7 +22,10 @@ type InvoiceItemFormData = {
   taxableAmount: number;
   amount: string;
 };
+
 type InvoiceAdjustment = {
+  disableBulkDisc?: string;
+  disableItemsDisc?: string;
   discType: ItemDiscountType;
   disc: string;
   roundOff: string;

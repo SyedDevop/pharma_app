@@ -24,8 +24,8 @@ type State = {
   invoiceItems: InvoiceItemFormData[];
   maxDiscount: number;
   totals: InvoiceTotal;
-  adjustment: InvoiceAdjustment;
   payment: InvoicePayment;
+  adjustment: InvoiceAdjustment;
 };
 
 type Actions = {
@@ -63,6 +63,13 @@ type Actions = {
   updateInvoicePaymentField: <K extends keyof Omit<InvoicePayment, "totalPaid" | "balance">>(
     key: K,
     value: InvoicePayment[K],
+  ) => void;
+
+  updateInvoiceAdjustment: <
+    K extends keyof Omit<InvoiceAdjustment, "disableItemsDisc" | "disableBulkDisc">,
+  >(
+    key: K,
+    value: InvoiceAdjustment[K],
   ) => void;
 };
 
@@ -119,14 +126,26 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   },
   updateInvoiceItemsField: (index, k, v) => {
     set((s) => {
-      const invoiceItems = updateInvoiceItem(s.invoiceItems, index, k, v, s.maxDiscount);
+      const adjustment = s.adjustment;
+      const invoiceItems = updateInvoiceItem(
+        s.invoiceItems,
+        index,
+        k,
+        v,
+        s.maxDiscount,
+        adjustment,
+      );
+      const isDiscountApplied = invoiceItems.some((item) => Number(item.disc) > 0);
       let totals = s.totals;
       let payment = s.payment;
       if (k !== "item") {
         totals = updateInvoiceTotals(invoiceItems);
         payment = calculateInvoicePayment(totals.netPayable, payment);
       }
-      return { invoiceItems, totals, payment };
+      adjustment.disableBulkDisc = isDiscountApplied
+        ? "Bulk discount is disabled because an item discount is already applied."
+        : undefined;
+      return { invoiceItems, totals, payment, adjustment };
     });
   },
   updateInvoiceItems: (index, patch) => {
@@ -136,7 +155,6 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   },
 
   totals: EMPTY_INVOICE_TOTAL,
-  adjustment: EMPTY_INVOICE_ADJUSTMENT,
   payment: EMPTY_INVOICE_PAYMENT,
 
   updateInvoicePaymentField: (k, v) => {
@@ -144,6 +162,24 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
       let payment = { ...s.payment, [k]: v };
       payment = calculateInvoicePayment(s.totals.netPayable, payment);
       return { payment };
+    });
+  },
+
+  adjustment: EMPTY_INVOICE_ADJUSTMENT,
+
+  updateInvoiceAdjustment: (k, v) => {
+    set((s) => {
+      const adjustment = { ...s.adjustment };
+
+      // Don't update if disableBulkDisc is set
+      if (adjustment.disableBulkDisc) return s;
+      adjustment[k] = v;
+
+      if (Number(adjustment.disc) > 0) {
+        adjustment.disableItemsDisc = "Bulk Discount has already been applied Applied";
+      } else adjustment.disableItemsDisc = undefined;
+
+      return { adjustment };
     });
   },
 }));

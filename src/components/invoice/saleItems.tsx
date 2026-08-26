@@ -99,7 +99,7 @@ export function SalesItems() {
 export default function InvoiceLineTable() {
   const lastItemRef = React.useRef<HTMLInputElement>(null);
   const invoiceItems = useInvoiceStore((state) => state.invoiceItems);
-
+  const disabledDiscount = useInvoiceStore((state) => state.adjustment.disableItemsDisc);
   const addEmptyRow = useInvoiceStore((state) => state.addEmptyInvoiceItem);
   const setInvoiceItemsFromMedicineItem = useInvoiceStore(
     (state) => state.setInvoiceItemsFromMedicineItem,
@@ -224,6 +224,7 @@ export default function InvoiceLineTable() {
                       defaultValue="%"
                       value={row.discType}
                       onValueChange={(v) => updateRow(idx, "discType", v as ItemDiscountType)}
+                      disabled={Boolean(disabledDiscount)}
                     >
                       <SelectTrigger className="rounded-r-none border-r-0">
                         <SelectValue />
@@ -238,6 +239,7 @@ export default function InvoiceLineTable() {
                       className="no-spinner rounded-l-none border-l-0 text-right tabular-nums"
                       value={row.disc}
                       onChange={(e) => updateRow(idx, "disc", e.target.value)}
+                      disabled={Boolean(disabledDiscount)}
                     />
                   </div>
                 </TableCell>

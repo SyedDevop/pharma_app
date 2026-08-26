@@ -1,18 +1,11 @@
 import { CreditCardIcon, InvoiceIcon, KeyboardIcon, XIcon } from "@phosphor-icons/react";
+import { Field, FieldError, FieldLabel, FieldTitle } from "@/components/ui/field";
 import { rupeesFmt } from "@/lib/my-utils";
 import { useInvoiceStore } from "@/store/invoice_db";
 import { DumGroupe, DumInput, DumTitle } from "../my-ui/dumInput";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { Field, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-  InputGroupText,
-} from "../ui/input-group";
 import { Kbd, KbdGroup } from "../ui/kbd";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Separator } from "../ui/separator";
@@ -40,6 +33,7 @@ function KeyShortcuts() {
             </h2>
           </div>
           <div className="space-y-2.5">
+            {" "}
             <div className="grid grid-cols-2 gap-4">
               <p>
                 <Kbd className="text-xs">F1</Kbd> {"  "}Cash
@@ -72,7 +66,6 @@ function KeyShortcuts() {
                 Balance
               </p>
             </div>
-
             <Separator />
             <Field>
               <FieldLabel htmlFor="note" className="font-semibold text-lg text-primary">
@@ -96,6 +89,8 @@ function KeyShortcuts() {
 
 function Totals() {
   const totals = useInvoiceStore((s) => s.totals);
+  const adjustment = useInvoiceStore((s) => s.adjustment);
+  const updateAdjustment = useInvoiceStore((s) => s.updateInvoiceAdjustment);
   return (
     <Card>
       <CardContent>
@@ -120,10 +115,15 @@ function Totals() {
               </DumInput>
             </DumGroupe>
 
-            <DumGroupe>
-              <DumTitle>Discount</DumTitle>
+            <Field>
+              <FieldTitle>Discount</FieldTitle>
               <div className="flex items-center gap-2">
-                <Select defaultValue="%">
+                <Select
+                  defaultValue="%"
+                  value={adjustment.discType}
+                  onValueChange={(v) => v && updateAdjustment("discType", v as ItemDiscountType)}
+                  disabled={Boolean(adjustment.disableBulkDisc)}
+                >
                   <SelectTrigger className="min-w-20">
                     <SelectValue />
                   </SelectTrigger>
@@ -133,12 +133,15 @@ function Totals() {
                   </SelectContent>
                 </Select>
                 <Input
+                  value={adjustment.disc}
                   type="number"
                   placeholder="00.00"
                   className="no-spinner text-right font-bold tabular-nums"
+                  onChange={(e) => updateAdjustment("disc", e.target.value)}
                 />
               </div>
-            </DumGroupe>
+              <FieldError errors={[{ message: adjustment.disableBulkDisc }]} />
+            </Field>
 
             <DumGroupe>
               <DumTitle>Round Off (auto)</DumTitle>
@@ -146,6 +149,8 @@ function Totals() {
                 type="number"
                 placeholder="00.00"
                 className="no-spinner text-right font-bold tabular-nums"
+                value={adjustment.roundOff}
+                onChange={(e) => updateAdjustment("roundOff", e.target.value)}
               />
             </DumGroupe>
             <Separator />

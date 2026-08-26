@@ -72,15 +72,16 @@ export const updateInvoiceItem = (
   key: keyof InvoiceItemFormData,
   value: InvoiceItemFormData[keyof InvoiceItemFormData],
   maxDiscount: number,
+  adjustment: InvoiceAdjustment,
 ) => {
   const prev = invoiceItems[index];
   if (!prev || prev[key] === value) return invoiceItems;
+  if (Number(adjustment.disc) > 0 && (key === "discType" || key === "disc")) return invoiceItems;
 
   const draft = { ...prev, [key]: value };
 
   const discNum = Number(draft.disc);
   const saleNum = Number(draft.sellRate);
-
   draft.sellRate = Math.min(saleNum, Number(draft.mrp)).toString();
   draft.qty = Math.min(Number(draft.qty), Number(draft.storeStock)).toString();
 
