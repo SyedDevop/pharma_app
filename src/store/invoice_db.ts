@@ -124,23 +124,26 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   deleteInvoiceItems: (id: string) => {
     set((s) => ({ invoiceItems: s.invoiceItems.filter((i) => i.id !== id) }));
   },
-  updateInvoiceItemsField: (index, k, v) => {
+  updateInvoiceItemsField: (index, key, value) => {
     set((s) => {
-      const adjustment = s.adjustment;
+      const adjustment = { ...s.adjustment };
       const invoiceItems = updateInvoiceItem(
         s.invoiceItems,
         index,
-        k,
-        v,
+        key,
+        value,
         s.maxDiscount,
         adjustment,
       );
       const isDiscountApplied = invoiceItems.some((item) => Number(item.disc) > 0);
       let totals = s.totals;
       let payment = s.payment;
-      if (k !== "item") {
+      if (key !== "item") {
         totals = updateInvoiceTotals(invoiceItems);
         payment = calculateInvoicePayment(totals.netPayable, payment);
+        const roundOff = Math.round(totals.netPayable) - totals.netPayable;
+        adjustment.roundOff = roundOff.toFixed(2);
+        totals.roundedNetPayable += roundOff;
       }
       adjustment.disableBulkDisc = isDiscountApplied
         ? "Bulk discount is disabled because an item discount is already applied."
@@ -170,6 +173,13 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
   updateInvoiceAdjustment: (k, v) => {
     set((s) => {
       const adjustment = { ...s.adjustment };
+      let totals = s.totals;
+      if (k === "roundOff") {
+        totals = {
+          ...totals,
+          roundedNetPayable: totals.netPayable + Number(v),
+        };
+      }
 
       // Don't update if disableBulkDisc is set
       if (adjustment.disableBulkDisc) return s;
@@ -179,7 +189,7 @@ export const useInvoiceStore = create<State & Actions>((set) => ({
         adjustment.disableItemsDisc = "Bulk Discount has already been applied Applied";
       } else adjustment.disableItemsDisc = undefined;
 
-      return { adjustment };
+      return { adjustment, totals };
     });
   },
 }));

@@ -35,6 +35,7 @@ type InvoiceTotal = {
   subTotal: number;
   gstTotal: number;
   netPayable: number;
+  roundedNetPayable: number;
 };
 
 type InvoicePayment = {

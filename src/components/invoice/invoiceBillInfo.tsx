@@ -157,7 +157,7 @@ function Totals() {
             <DumGroupe>
               <DumTitle>Net Payable</DumTitle>
               <DumInput className="text-right font-bold text-primary/60 text-sm">
-                {rupeesFmt(totals.netPayable)}
+                {rupeesFmt(totals.roundedNetPayable)}
               </DumInput>
             </DumGroupe>
           </div>
