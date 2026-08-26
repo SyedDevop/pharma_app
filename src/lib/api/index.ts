@@ -1,7 +1,7 @@
-import { fetch } from "@tauri-apps/plugin-http";
+import { isTauri } from "@tauri-apps/api/core";
+import { fetch as tFetch } from "@tauri-apps/plugin-http";
 
 export const BASE_URL = "https://pharmacy.vcarehospital.in";
-
 type ApiEndpoints = {
   "get_invoice_number.php": undefined;
   "get_patient.php": { term: string; type: string };
@@ -16,6 +16,7 @@ export const fetchApi = async <T, U extends EndpointUrl = EndpointUrl>(
   query: ApiEndpoints[U],
   baseUrl: string = BASE_URL,
 ): Promise<ApiResponse<T>> => {
+  baseUrl = isTauri() ? baseUrl : "http://localhost:1420";
   const fetchUrl = new URL(`${baseUrl}/api/${url}`);
   if (query) {
     for (const [key, value] of Object.entries(query)) {
@@ -25,6 +26,6 @@ export const fetchApi = async <T, U extends EndpointUrl = EndpointUrl>(
     // const searchParams = new URLSearchParams(query).toString();
     // fetchUrl.search = searchParams;
   }
-  const response = await fetch(fetchUrl);
+  const response = await (isTauri() ? tFetch(fetchUrl) : fetch(fetchUrl));
   return response.json() as Promise<ApiResponse<T>>;
 };

@@ -37,6 +37,12 @@ export default defineConfig(async () => ({
   clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
+    proxy: {
+      "/api": {
+        target: "https://pharmacy.vcarehospital.in",
+        changeOrigin: true,
+      },
+    },
     port: 1420,
     strictPort: true,
     host: host || false,
