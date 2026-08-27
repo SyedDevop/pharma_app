@@ -1,10 +1,11 @@
 import {
   BedIcon,
+  type Icon,
   MagnifyingGlassIcon,
   StethoscopeIcon,
   StorefrontIcon,
 } from "@phosphor-icons/react";
-import { accent, PatientSearch } from "@/components/my-ui/PatientSearch";
+import { accent, type PatientFom, PatientSearch } from "@/components/my-ui/PatientSearch";
 import { useInvoiceStore } from "@/store/invoice_db";
 
 const columns = [
@@ -28,12 +29,7 @@ const columns = [
   },
 ] as const;
 
-interface Props {
-  onSelect?: (patient: Patient) => void;
-}
-
-export function GetPatient({ onSelect }: Props) {
-  const fetchPatientBalance = useInvoiceStore((s) => s.fetchPatientBalance);
+export function GetPatient() {
   return (
     <div>
       <div className="mb-4 flex max-w-fit items-center gap-2.5 rounded-r-sm border-primary border-l-2 bg-primary/10 py-1 pr-4 pl-3">
@@ -47,28 +43,50 @@ export function GetPatient({ onSelect }: Props) {
           const style = accent[col.key];
           const Icon = col.icons;
           return (
-            <section
+            <PatientSearchInput
               key={col.key}
-              className={`flex flex-col gap-3 rounded-lg border ${style.border}/30 ${style.bg} p-3`}
-            >
-              <div className={`flex items-center gap-1.5 ${style.text}`}>
-                <Icon className="size-4" weight="bold" />
-                <span className="font-heading font-semibold text-xs uppercase tracking-wide">
-                  {col.label}
-                </span>
-              </div>
-              <PatientSearch
-                patientFrom={col.key}
-                onSelect={(p) => {
-                  onSelect?.(p);
-                  fetchPatientBalance(p);
-                }}
-                placeholder={col.description}
-              />
-            </section>
+              label={col.label}
+              patientFrom={col.key}
+              description={col.description}
+              Icon={Icon}
+              style={style}
+            />
           );
         })}
       </div>
     </div>
+  );
+}
+
+interface Props {
+  label: string;
+  patientFrom: PatientFom;
+  description: string;
+  Icon: Icon;
+  style: {
+    bg: string;
+    border: string;
+    focus: string;
+    text: string;
+  };
+}
+function PatientSearchInput({ label, patientFrom, description, Icon, style }: Props) {
+  const setPatient = useInvoiceStore((s) => s.setPatient);
+  const fetchPatientBalance = useInvoiceStore((s) => s.fetchPatientBalance);
+  return (
+    <section className={`flex flex-col gap-3 rounded-lg border ${style.border}/30 ${style.bg} p-3`}>
+      <div className={`flex items-center gap-1.5 ${style.text}`}>
+        <Icon className="size-4" weight="bold" />
+        <span className="font-heading font-semibold text-xs uppercase tracking-wide">{label}</span>
+      </div>
+      <PatientSearch
+        patientFrom={patientFrom}
+        onSelect={(p) => {
+          setPatient(p);
+          fetchPatientBalance(p);
+        }}
+        placeholder={description}
+      />
+    </section>
   );
 }
