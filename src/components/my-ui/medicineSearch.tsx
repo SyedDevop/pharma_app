@@ -91,8 +91,8 @@ export const expiryDotClass: Record<ExpiryTone, string> = {
 interface MedicineSearchProps {
   ref?: React.Ref<HTMLInputElement>;
   /** The text currently in the cell (`row.item`). */
-  value: string;
-  onValueChange: (value: string) => void;
+  initialValue?: string;
+  //onValueChange: (value: string) => void;
   onSelect: (medicine: MedicineItem) => void;
   schedule?: ScheduleType;
   placeholder?: string;
@@ -104,8 +104,8 @@ interface MedicineSearchProps {
 
 export function MedicineSearch({
   ref,
-  value,
-  onValueChange,
+  initialValue = "",
+  // onValueChange,
   onSelect,
   schedule,
   placeholder = "Scan barcode or type medicine name...",
@@ -114,6 +114,7 @@ export function MedicineSearch({
   disabled,
   className,
 }: MedicineSearchProps) {
+  const [value, setValue] = React.useState(initialValue);
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -191,7 +192,7 @@ export function MedicineSearch({
     <Autocomplete
       items={results}
       value={value}
-      onValueChange={onValueChange}
+      onValueChange={setValue}
       open={open && canSearch}
       onOpenChange={setOpen}
       openOnInputClick

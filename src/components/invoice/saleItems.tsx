@@ -166,10 +166,11 @@ export default function InvoiceLineTable() {
                 <TableCell className="min-w-100">
                   <MedicineSearch
                     ref={isLast ? lastItemRef : null}
-                    value={row.item}
-                    onValueChange={(value) => updateRow(idx, "item", value)}
+                    initialValue={row.item}
+                    // onValueChange={(value) => updateRow(idx, "item", value)}
                     onSelect={(med) => {
                       setInvoiceItemsFromMedicineItem(med, row);
+                      updateRow(idx, "qty", "1");
                     }}
                     schedule={row.schedule ?? undefined}
                   />
