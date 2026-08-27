@@ -127,7 +127,7 @@ export const updateGstSlab = (items: InvoiceItemFormData[]) => {
       const slab = gstSlab.get(item.gstPct);
       if (!slab) continue;
       gstSlab.set(item.gstPct, {
-        gst: slab.gst + Number(item.gstAmount),
+        gst: Number(item.gstPct),
         cgst: slab.cgst + Number(item.cgst),
         sgst: slab.sgst + Number(item.sgst),
         taxable: slab.taxable + Number(item.taxableAmount),
