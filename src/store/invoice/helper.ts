@@ -115,7 +115,7 @@ export const updateInvoiceTotals = (items: InvoiceItemFormData[]) =>
   items.reduce((acc, inv) => {
     const subTotal = acc.subTotal + inv.taxableAmount;
     const gstTotal = acc.gstTotal + inv.gstAmount;
-    const netPayable = acc.netPayable + subTotal + gstTotal;
+    const netPayable = acc.netPayable + (subTotal + gstTotal);
     return { subTotal, gstTotal, netPayable, roundedNetPayable: netPayable };
   }, EMPTY_INVOICE_TOTAL);
 
