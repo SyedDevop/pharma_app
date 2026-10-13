@@ -67,7 +67,7 @@ function Index() {
                 key={item.label}
                 className="inline-flex items-center gap-1.5 text-muted-foreground text-xs"
               >
-                <span className={cn("size-2 rounded-[1px]", item.color)} />
+                <span className={cn("size-2 rounded-xs", item.color)} />
                 {item.label}
               </span>
             ))}

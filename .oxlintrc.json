@@ -1,0 +1,8 @@
+{
+  "ignorePatterns": ["dist/**", ".opencode/**"],
+  "jsPlugins": ["@shadcn/lint"],
+  "rules": {
+    "shadcn/no-arbitrary-values": "error",
+    "shadcn/no-unknown-classes": "error"
+  }
+}

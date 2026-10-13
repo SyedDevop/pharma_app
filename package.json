@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "cn": "^0.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "shadcn": "^4.16.0",
@@ -35,12 +36,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.5",
+    "@shadcn/lint": "^0.2.0",
     "@tanstack/router-plugin": "^1.168.23",
     "@tauri-apps/cli": "^2",
     "@types/node": "^26.1.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "oxlint": "^1.85.0",
     "typescript": "~5.8.3",
     "vite": "^7.0.4"
   }
