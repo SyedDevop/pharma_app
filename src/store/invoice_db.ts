@@ -13,9 +13,9 @@ import {
   calculateInvoicePayment,
   fetchPatientBalance,
   mapMedicineItemToInvoiceItem,
-  updateGstSlab,
+  recalcInvoice,
+  round2,
   updateInvoiceItem,
-  updateInvoiceTotals,
 } from "./invoice/helper";
 
 type State = {
@@ -121,55 +121,46 @@ export const useInvoiceStore = create<State & Actions>()(
       set((s) => ({ invoiceItems: [...s.invoiceItems, emptyInvoiceItem()] }));
     },
     setInvoiceItemsFromMedicineItem: (med, item) => {
-      set((s) => ({
-        invoiceItems: [
-          ...s.invoiceItems.filter((i) => i.id !== item.id),
-          mapMedicineItemToInvoiceItem(med, item),
-        ],
-      }));
+      set((s) => {
+        const invoiceItems = s.invoiceItems.map((i) =>
+          i.id === item.id ? mapMedicineItemToInvoiceItem(med, i, s.maxDiscount) : i,
+        );
+        return {
+          invoiceItems,
+          ...recalcInvoice(invoiceItems, s.adjustment, s.payment, s.maxDiscount),
+        };
+      });
     },
     deleteInvoiceItems: (id: string) => {
       set((s) => {
         const invoiceItems = s.invoiceItems.filter((i) => i.id !== id);
-        let payment = s.payment;
         let adjustment = s.adjustment;
-        const gstSlab = updateGstSlab(invoiceItems);
-        const totals = updateInvoiceTotals(invoiceItems);
-        payment = calculateInvoicePayment(totals.netPayable, payment);
         if (invoiceItems.length === 0) {
           invoiceItems.push(emptyInvoiceItem());
           adjustment = EMPTY_INVOICE_ADJUSTMENT;
         }
-        return { invoiceItems, totals, payment, gstSlab, adjustment };
+        return {
+          invoiceItems,
+          ...recalcInvoice(invoiceItems, adjustment, s.payment, s.maxDiscount),
+        };
       });
     },
     updateInvoiceItemsField: (index, key, value) => {
       set((s) => {
-        const adjustment = { ...s.adjustment };
-        let gstSlab = s.gstSlab;
         const invoiceItems = updateInvoiceItem(
           s.invoiceItems,
           index,
           key,
           value,
           s.maxDiscount,
-          adjustment,
+          s.adjustment,
         );
-        const isDiscountApplied = invoiceItems.some((item) => Number(item.disc) > 0);
-        let totals = s.totals;
-        let payment = s.payment;
-        if (key !== "item") {
-          totals = updateInvoiceTotals(invoiceItems);
-          const roundOff = Math.round(totals.netPayable) - totals.netPayable;
-          adjustment.roundOff = roundOff.toFixed(2);
-          totals.roundedNetPayable += roundOff;
-          payment = calculateInvoicePayment(totals.roundedNetPayable, payment);
-          gstSlab = updateGstSlab(invoiceItems);
-        }
-        adjustment.disableBulkDisc = isDiscountApplied
-          ? "Bulk discount is disabled because an item discount is already applied."
-          : undefined;
-        return { invoiceItems, totals, payment, adjustment, gstSlab };
+        if (invoiceItems === s.invoiceItems) return s;
+        if (key === "item") return { invoiceItems };
+        return {
+          invoiceItems,
+          ...recalcInvoice(invoiceItems, s.adjustment, s.payment, s.maxDiscount),
+        };
       });
     },
     updateInvoiceItems: (index, patch) => {
@@ -207,24 +198,22 @@ export const useInvoiceStore = create<State & Actions>()(
 
     updateInvoiceAdjustment: (k, v) => {
       set((s) => {
-        const adjustment = { ...s.adjustment };
-        let totals = s.totals;
         if (k === "roundOff") {
-          totals = {
-            ...totals,
-            roundedNetPayable: totals.netPayable + Number(v),
+          const totals = {
+            ...s.totals,
+            roundedNetPayable: round2(s.totals.netPayable + (Number(v) || 0)),
+          };
+          return {
+            adjustment: { ...s.adjustment, roundOff: v },
+            totals,
+            payment: calculateInvoicePayment(totals.roundedNetPayable, s.payment),
           };
         }
 
         // Don't update if disableBulkDisc is set
-        if (adjustment.disableBulkDisc) return s;
-        adjustment[k] = v;
-
-        if (Number(adjustment.disc) > 0) {
-          adjustment.disableItemsDisc = "Bulk Discount has already been applied Applied";
-        } else adjustment.disableItemsDisc = undefined;
-
-        return { adjustment, totals };
+        if (s.adjustment.disableBulkDisc) return s;
+        const adjustment = { ...s.adjustment, [k]: v };
+        return recalcInvoice(s.invoiceItems, adjustment, s.payment, s.maxDiscount);
       });
     },
     gstSlab: new Map(),
